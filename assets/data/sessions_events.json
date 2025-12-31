@@ -1,0 +1,33 @@
+{
+  "section_info": {
+    "title": "Sessions and Events_XX",
+    "details": "_XXExperience as a keynote speaker and session chair.",
+    "icon_class": "bi bi-calendar-event"
+  },
+  "sessionsevents": [
+    {
+      "id_ref": "sessevnt_spkr",
+      "title": "Seminar Speaker_XX",
+      "type": "Seminar Session_XX",
+      "icon_class": "bi bi-mic",
+      "organization": "CSE Club, HSTU_XX",
+      "location": "Dinajpur, Bangladesh",
+      "date": "Sep. 12, 2022",
+      "description": "_XXPresented a talk at a seminar on Higher Studies in Abroad - Journey to Australia and Research Experiences.",
+      "image_path": "",
+      "url_link": ""
+    },
+    {
+      "id_ref": "sessevnt_knspkr",
+      "title": "Keynote Speaker_XX",
+      "type": "Seminar/Keynote Session",
+      "icon_class": "bi bi-megaphone",
+      "organization": "AFCSE, HSTU_XX",
+      "location": "Dinajpur, Bangladesh",
+      "date": "Apr. 06, 2015",
+      "description": "_XXDelivered a keynote at a seminar on career development and the future of mobile app development in Bangladesh.",
+      "image_path": "",
+      "url_link": ""
+    }
+  ]
+}

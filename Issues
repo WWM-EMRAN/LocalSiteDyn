@@ -1,0 +1,21 @@
+
+
+
+1. Index = Navigation menu = Items are not selected automatically when clicked and autoscroll is not working.
+2. Index = Section headers are not scrolled to appropriate position sometimes (especially for the first time with About section).
+3. All pages except Index = Top sticky bar stay on top even when the Mobile Toggle menu is opened. It should be shown below the Nav menu.
+4. CV pages = Portfolio and Contact sections are not showing links/URLs properly. Links are getting outside the page (especially in Mobile view).
+5. CV pages = Photo/image is not working properly in Mobile view. It shows very small image that is hard to see.
+6. CV pages = Standard CV printing issue persists. It shows no margine when printed.
+7. Index = Section subheadings need font changes.
+8. Index = Education and Professional Experience sections = Font size of the Skills need to be increased.
+9.
+
+
+*. Index = Add animation to all the elements. Currently it not working for the section subheadings.
+*. Have to check for all the js functions to see if there are any static components/elements that can be made dynamic.
+*. General details and Section details pages = Need to have the sticky bar on top of the page in the same way so that it does not come on top of the nav menu (in Mobile view).
+    Need to add contents dynamically to these pages based on some url parameter.
+
+
+

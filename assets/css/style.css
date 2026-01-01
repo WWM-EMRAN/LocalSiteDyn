@@ -203,6 +203,7 @@ a, a:hover, a:focus, .navmenu a, .navmenu a:hover {
   padding: 10px 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  z-index: 999999;
 }
 
 .navmenu::-webkit-scrollbar {
@@ -281,6 +282,7 @@ a, a:hover, a:focus, .navmenu a, .navmenu a:hover {
 
 .navmenu .dropdown.dropdown-active > a .toggle-dropdown {
   transform: rotate(180deg);
+  z-index: 99999;
 }
 
 /* --- Sidebar Footer --- */
@@ -345,7 +347,7 @@ a, a:hover, a:focus, .navmenu a, .navmenu a:hover {
   position: fixed;
   top: 15px;
   right: 15px;
-  z-index: 9999;
+  z-index: 99999;
   transition: 0.3s;
 }
 
@@ -401,6 +403,12 @@ a, a:hover, a:focus, .navmenu a, .navmenu a:hover {
 /*--------------------------------------------------------------
 # Global Section Styles
 --------------------------------------------------------------*/
+/* This ensures the 'top' of the section is physically lower,
+   matching where the text actually starts below your menu */
+section[id], .main-section-title {
+    scroll-margin-top: 80px; /* Adjust to match your header height */
+}
+
 .section {
   color: var(--default-color);
   background-color: var(--background-color);
@@ -410,6 +418,7 @@ a, a:hover, a:focus, .navmenu a, .navmenu a:hover {
   overflow: hidden;
   /*border-bottom: 1px solid var(--cv-title-border-color);*/
   border-bottom: 1px solid var(--default-color);
+  /*scroll-margin-top: 150px;*/
 }
 
 .section-title {
@@ -942,11 +951,17 @@ a, a:hover, a:focus, .navmenu a, .navmenu a:hover {
 /*--------------------------------------------------------------
 # Skills and Tools Section
 --------------------------------------------------------------*/
-.skills .section-title h6 {
-  font-size: 16px; /* Matches your main paragraph size */
-  line-height: 1.6;
-  margin-bottom: 30px;
-}
+/*.skills .section-title h6 {*/
+/*  font-size: 16px; !* Matches your main paragraph size *!*/
+/*  line-height: 1.6;*/
+/*  margin-bottom: 30px;*/
+/*}*/
+
+/*.skills .section-title {*/
+/*  font-size: 16px; !* Matches your main paragraph size *!*/
+/*  line-height: 1.6;*/
+/*  margin-bottom: 30px;*/
+/*}*/
 
 .skills .progress {
   height: 60px;
@@ -990,13 +1005,21 @@ a, a:hover, a:focus, .navmenu a, .navmenu a:hover {
 /*--------------------------------------------------------------
 # Honors and Awards Section
 --------------------------------------------------------------*/
-.services .section-title h6 {
-  font-family: var(--default-font), sans-serif;
-  font-size: 15px;
-  color: var(--default-color);
-  margin-top: 10px;
-  line-height: 1.6;
-}
+/*.services .section-title h6 {*/
+/*  font-family: var(--default-font), sans-serif;*/
+/*  font-size: 15px;*/
+/*  color: var(--default-color);*/
+/*  margin-top: 10px;*/
+/*  line-height: 1.6;*/
+/*}*/
+
+/*.services .section-title {*/
+/*  font-family: var(--default-font), sans-serif;*/
+/*  font-size: 15px;*/
+/*  color: var(--default-color);*/
+/*  margin-top: 10px;*/
+/*  line-height: 1.6;*/
+/*}*/
 
 .services .service-item {
   position: relative;
@@ -1379,12 +1402,48 @@ html {
    PRINTABLE CV COMPONENTS (Version 3 Sync)
    ============================================================================= */
 
+/* Ensure the navigation bar stays above all other CV elements */
+#one-page-section .cv-header {
+    position: fixed; /* Fixes it to the viewport */
+    top: 0;          /* Aligns to the very top */
+    left: 0;         /* Ensures it starts from the left edge */
+    width: 100%;     /* Covers the full screen width */
+    z-index: 2000;   /* High value to stay above sidebar and body */
+    background-color: #ffffff; /* Prevents content from showing through */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Adds separation from the content */
+}
+
+/*!* Update Line 474 *!*/
+/*.cv-header {*/
+/*  position: relative;*/
+/*  background-color: #000;*/
+/*  color: #fff;*/
+/*  padding: 20px 40px; !* Reduced padding since nav moved out *!*/
+/*  !* REMOVE overflow: hidden; (Line 478) *!*/
+/*  border-radius: 0; !* Changed to match a top nav bar *!*/
+/*}*/
+
+/*!* Update Line 536 *!*/
+/*.cv-nav-menu {*/
+/*  position: sticky; !* Makes it stay on top while scrolling *!*/
+/*  top: 0;           !* Sticks to the very top of the viewport *!*/
+/*  z-index: 1100;    !* Ensures it stays above the sidebar (z-index 10) *!*/
+/*  background-color: #111; !* Solid background so content doesn't bleed through *!*/
+/*  border-bottom: 1px solid rgba(255, 255, 255, 0.1);*/
+/*  padding: 10px 40px;*/
+/*  width: 100%;*/
+/*}*/
+
+#one-page-section .cv-container {
+    margin-top: 60px; /* Adjust this to match your actual header height */
+}
+
 /* --- Sticky Control Bar (The Black Top Bar) --- */
 .cv-sticky-bar {
     background-color: #000000 !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     min-height: 80px;
-    z-index: 1050;
+    /*z-index: 1050;*/
     top: 0 !important;
 }
 

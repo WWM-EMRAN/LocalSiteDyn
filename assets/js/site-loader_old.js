@@ -8,7 +8,7 @@ const JSON_FILES = [
     'personal_info.json',
     'site.json',
     'key_metrics.json',
-    'education.json',
+    'academic_information.json',
     'professional_experience.json',
     'expertise_achievements.json',
     'skills.json',
@@ -19,9 +19,9 @@ const JSON_FILES = [
     'sessions_events.json',
     'languages.json',
     'portfolios.json',
-    'volunteerings.json',
+    'volunteering_services.json',
     'publications.json',
-    'contacts.json',
+    'contact_details.json',
     'ea_logo.json',
     'copyright.json',
     'diary.json',
@@ -569,7 +569,7 @@ function renderKeyMetricsCV(keyMetricsData) {
 
 /**
  * Renders the Education section (ID: #educations) for the main index page (two-column resume style).
- * FIX: Now correctly loads the Summary title from education.json.
+ * FIX: Now correctly loads the Summary title from academic_information.json.
  * @param {object} educationData
  */
 function renderEducations(educationData) {
@@ -831,7 +831,7 @@ function renderEducationsCV(educationData) {
 /**
  * Renders the Education details for the education-details.html page.
  * Targets the #educationDetails_main container.
- * @param {object} educationData - Data from education.json
+ * @param {object} educationData - Data from academic_information.json
  */
 function renderEducationDetails(educationData) {
     if (!educationData || !Array.isArray(educationData.degrees)) return;
@@ -3857,7 +3857,7 @@ function renderPublicationsDetails(publicationsData) {
 /**
  * Renders the Contacts section (ID: #contacts) for the main index page.
  * Dynamically populates the 6-column grid and updates the map iframe.
- * @param {object} contactsData - Data from contacts.json
+ * @param {object} contactsData - Data from contact_details.json
  */
 function renderContacts(contactsData) {
     if (!contactsData || !contactsData.section_info || !contactsData.contacts) {

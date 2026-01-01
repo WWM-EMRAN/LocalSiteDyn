@@ -19,7 +19,7 @@ const JSON_DATA_FILES = [
     'site.json',
     'personal_info.json',
     'key_metrics.json',
-    'education.json',
+    'academic_information.json',
     'professional_experience.json',
     'expertise_achievements.json',
     'skills.json',
@@ -30,9 +30,9 @@ const JSON_DATA_FILES = [
     'sessions_events.json',
     'languages.json',
     'portfolios.json',
-    'volunteerings.json',
+    'volunteering_services.json',
     'publications.json',
-    'contacts.json',
+    'contact_details.json',
     'ea_logo.json',
     'copyright.json',
     'diary.json',
@@ -1831,7 +1831,7 @@ function renderIndexPortfolios() {
 
 /**
  * Renders an individual Volunteering item.
- * @param {Object} item - The volunteering object from volunteerings.json.
+ * @param {Object} item - The volunteering object from volunteering_services.json.
  * @param {number} index - The index for AOS delay calculation.
  * @returns {string} - The HTML string for the service item.
  */
@@ -3012,7 +3012,7 @@ function renderOnePageCV() {
 
 /**
  * Renders the Profile Image and Contact section for the One-Page CV Sidebar.
- * Loads data from personal_info.json, contacts.json, and site.json.
+ * Loads data from personal_info.json, contact_details.json, and site.json.
  */
 function renderOnePageCVSidebarContact() {
     const sidebar = document.querySelector('#one-page-section .cv-sidebar');
@@ -3361,7 +3361,7 @@ async function renderOnePageCVMetrics() {
 
 /**
  * Renders the Education section for the One-Page CV.
- * Maps data from degrees array in education.json.
+ * Maps data from degrees array in academic_information.json.
  * Target: #one-page-section .cv-main-body (Education Section)
  */
 function renderOnePageCVEducation() {
@@ -4098,7 +4098,7 @@ function renderOnePageCVPortfolio(limit=2) {
 
 /**
  * Renders the Volunteering Services section for the One-Page CV.
- * Dynamically loads data from volunteerings.json and matches current formatting.
+ * Dynamically loads data from volunteering_services.json and matches current formatting.
  */
 function renderOnePageCVVolunteering(limit=2) {
     const mainBody = document.querySelector('#one-page-section .cv-main-body');

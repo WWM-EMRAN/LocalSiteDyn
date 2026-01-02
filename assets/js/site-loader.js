@@ -96,10 +96,12 @@ function populateSite(main_menu_pages) {
     // Re-initialize index page after DOM updates
     if (pathName.includes('index.html') || pathName === '/' || pathName.endsWith('/')) {
         renderIndexPage();
+        // ;
     }
     // Re-initialize CV page after DOM updates
     else if (pathName.includes('curriculum-vitae.html')) {
         renderCVPage();
+        // ;
     }
 
     // Re-initialize external libraries after DOM updates
@@ -206,7 +208,7 @@ function renderCommonElements(main_menu_pages) {
     renderMenuFooter(SITE_DATA.site.footer_meta, SITE_DATA.site.assets);
     renderPageFooter(SITE_DATA.site.footer_meta);
     renderNavigation({main_menu: menuToRender});
-    renderNavDropdowns();
+    // renderNavDropdowns();
 
     console.log("Rendering the common elements of the site finished successfully...");
 }
@@ -1027,7 +1029,7 @@ function renderIndexAcademicInformation() {
             if (!renderedCategories.includes(degree.degree_level)) {
                 finalHtml += `
                     <div class="col-lg-12" data-aos="fade-up">
-                        <h2 class="resume-category-title">
+                        <h2 class="resume-category-title" data-aos="fade-up">
                             <i class="${degree.icon_class} me-1"></i> ${degree.degree_level}
                         </h2>
                     </div>`;
@@ -1167,14 +1169,14 @@ function renderIndexProfessionalExperience() {
     const experienceRow = expSection.querySelector('.container > .row[data-aos-delay="100"]');
     if (experienceRow) {
         experienceRow.innerHTML = data.experiences.map(cat => `
-            <div class="col-lg-12">
+            <div class="col-lg-12" data-aos="fade-up">
                 <div class="resume-category-group mb-5">
-                    <h2 class="resume-category-title">
+                    <h2 class="resume-category-title" data-aos="fade-up">
                         <i class="${cat.organisation[0].icon_class}"></i> ${cat.category}
                     </h2>
                     ${cat.organisation.map(org => `
                         <div class="ms-3 mb-4 mt-3">
-                            <h2 class="resume-title">
+                            <h2 class="resume-title" data-aos="fade-up">
                                 <i class="bi bi-building me-1"></i>
                                 <a href="${org.link}" target="_blank">${org.organization}<i class="bx bx-link-external ms-1 small"></i></a>
                                 <span class="ms-2 small text-muted fw-normal">
@@ -2021,7 +2023,7 @@ function renderIndexContacts() {
     }
 
     // 2. Render Contact Grid
-    const gridContainer = section.querySelector('.row.gy-4');
+    const gridContainer = contSection.querySelector('.row.gy-4');
     if (gridContainer) {
         // Clear existing items but preserve the map container
         const mapContainer = gridContainer.querySelector('.col-lg-12');
@@ -2162,16 +2164,18 @@ function renderStandardCVAbout() {
     const aboutSection = document.getElementById('about');
     if (!aboutSection || !SITE_DATA.personal_info) return;
 
-    const hero = SITE_DATA.personal_info.hero;
-    const keywards = hero.main_keywards;
+    const personal_info = SITE_DATA.personal_info;
+    // const hero = SITE_DATA.personal_info.hero;
+    // const keywards = hero.main_keywards;
 
     // Construct the summary dynamically
-    const summaryText = `
-        I am a research and development enthusiast in ${keywards.hero_slogan.map(s => s.text).join(', ')}, 
-        Generative AI, Explainability, Interpretability and Optimisation. 
-        Experienced in applied research in: ${keywards.expertise_keywards.slice(0, 4).join(', ')}. 
-        Involved in the academic and industrial collaboration researches and projects.
-    `;
+    // const summaryText = `
+    //     I am a research and development enthusiast in ${keywards.hero_slogan.map(s => s.text).join(', ')},
+    //     Generative AI, Explainability, Interpretability and Optimisation.
+    //     Experienced in applied research in: ${keywards.expertise_keywards.slice(0, 4).join(', ')}.
+    //     Involved in the academic and industrial collaboration researches and projects.
+    // `;
+    const summaryText = personal_info.profile_summary.intro_paragraph_html;
 
     const summaryParagraph = aboutSection.querySelector('p');
     if (summaryParagraph) {

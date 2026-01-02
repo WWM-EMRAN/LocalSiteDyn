@@ -243,14 +243,32 @@ a, a:hover, a:focus, .navmenu a, .navmenu a:hover {
   color: var(--accent-color) !important;
 }
 
+/* Keep dropdown parent highlighted when a child link is active */
+.navmenu li.active > a {
+  color: var(--nav-hover-color) !important;
+}
+
+.navmenu li.active > a .navicon {
+  color: var(--accent-color) !important;
+}
+
+/* Optional: make toggle button match active parent too */
+.navmenu li.active > a .toggle-dropdown {
+  background-color: var(--accent-color) !important;
+  color: var(--contrast-color) !important;
+}
+
+
 /* --- Dropdown Submenu --- */
 .navmenu .dropdown ul {
   margin: 5px 20px;
   padding: 5px 10px;
   display: none;
   position: relative;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  /*background-color: rgba(255, 255, 255, 0.05);*/
+  background-color: rgba(0,0,0, 0.4);
+  /*border: 1px solid rgba(255, 255, 255, 0.1);*/
+  border: 1px solid var(--accent-color);
   border-radius: 5px;
 }
 
@@ -405,9 +423,9 @@ a, a:hover, a:focus, .navmenu a, .navmenu a:hover {
 --------------------------------------------------------------*/
 /* This ensures the 'top' of the section is physically lower,
    matching where the text actually starts below your menu */
-section[id], .main-section-title {
-    scroll-margin-top: 80px; /* Adjust to match your header height */
-}
+/*section[id], .main-section-title {*/
+/*    scroll-margin-top: 80px; !* Adjust to match your header height *!*/
+/*}*/
 
 .section {
   color: var(--default-color);
@@ -417,7 +435,8 @@ section[id], .main-section-title {
   padding-bottom: 15px;
   overflow: hidden;
   /*border-bottom: 1px solid var(--cv-title-border-color);*/
-  border-bottom: 1px solid var(--default-color);
+  border-bottom: 1px solid var(--accent-color);
+  /*border-bottom: 1px solid var(--default-color);*/
   /*scroll-margin-top: 150px;*/
 }
 
@@ -478,11 +497,20 @@ section[id], .main-section-title {
   min-height: 100vh; /* Ensures full screen height */
   position: relative;
   /*padding: 45% 0;*/
-  padding: 80px 0;
+  /*padding: 80px 0;*/
+  padding: 0;
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
+.hero.section {
+  padding-top: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
 
 .hero img {
   position: absolute;
@@ -508,6 +536,7 @@ section[id], .main-section-title {
   position: relative;
   z-index: 3; /* Top layer for visibility */
   min-width: 300px;
+  padding-top: 80px;
   text-align: center;
 }
 
@@ -531,6 +560,7 @@ section[id], .main-section-title {
 .hero p span {
   letter-spacing: 1px;
   border-bottom: 2px solid var(--accent-color);
+  /*border-bottom: 1px solid var(--default-color);*/
 }
 
 .hero .social-links {
@@ -885,7 +915,8 @@ section[id], .main-section-title {
 .resume-category-title {
   /*color: var(--accent-color);*/
   /*border-bottom: 2px solid var(--accent-color);*/
-  border-bottom: 2px solid var(--accent-color);
+  /*border-bottom: 2px solid var(--accent-color);*/
+  border-bottom: 1px solid var(--default-color);
   padding-bottom: 5px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -1395,6 +1426,7 @@ summary.badge::-webkit-details-marker {
 /* Optional: Smooth scrolling effect */
 html {
     scroll-behavior: smooth;
+    animation-delay: 3s;
 }
 
 
@@ -1411,6 +1443,7 @@ html {
     z-index: 2000;   /* High value to stay above sidebar and body */
     background-color: #ffffff; /* Prevents content from showing through */
     box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Adds separation from the content */
+    /*box-shadow: 0 2px 5px rgba(255,255,255,1); !* Adds separation from the content *!*/
 }
 
 /*!* Update Line 474 *!*/
@@ -1439,13 +1472,32 @@ html {
 }
 
 /* --- Sticky Control Bar (The Black Top Bar) --- */
+.cv-sticky-parent {
+  min-height: 100vh;
+}
+
+
 .cv-sticky-bar {
     background-color: #000000 !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     min-height: 80px;
-    /*z-index: 1050;*/
+    z-index: 800;
     top: 0 !important;
+    /*position: fixed;*/
 }
+
+/*.cv-sticky-bar {*/
+/*  background-color: #000000 !important;*/
+/*  border-bottom: 1px solid rgba(255, 255, 255, 0.2);*/
+/*  height: 80px;*/
+/*  !*min-height: 80px;*!*/
+/*  position: fixed;*/
+/*  top: 0;*/
+/*  left: 0;*/
+/*  right: 0;*/
+/*  z-index: 1050;*/
+/*}*/
+
 
 .cv-nav-title {
     color: var(--contrast-color);
@@ -1538,6 +1590,11 @@ html {
         margin: 0 !important;
         padding: 0 !important;
     }
+    /*.main {*/
+    /*  padding-top: 0 !important;*/
+    /*  margin-top: 0 !important;*/
+    /*}*/
+
 
     /* 3. Strip backgrounds and ensure proper display */
     .cv-bg-wrapper, .cv-section {
@@ -1560,13 +1617,14 @@ html {
     }
 
     /* 5. Text Clarity & High Contrast */
-    body {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        margin: 0 !important;
-        /*margin: 5mm 0mm 0mm 0mm; !important; !* top, right, bottom, left *!*/
-        /*margin-bottom: 150mm;*/
-    }
+    /*body {*/
+    /*    background-color: #ffffff !important;*/
+    /*    color: #000000 !important;*/
+    /*    margin: 0 !important;*/
+    /*    padding: 0 !important;*/
+    /*    !*margin: 95mm 0mm 0mm 0mm; !important; !* top, right, bottom, left *!*!*/
+    /*    !*margin-bottom: 150mm;*!*/
+    /*}*/
 
     /* Ensure links don't show URLs or colors */
     a {
@@ -1632,13 +1690,16 @@ html {
 /* Specific fix for all anchor links */
 /* No offset or smaller offset for the printable CV */
 body.printable-cv-page section[id] {
-    scroll-margin-top: 90px !important;
+    /*scroll-margin-top: 80px !important;*/
+    margin-top: 10px !important;
+    scroll-margin-top: 5px !important;
 }
 
 /* Only apply the offset on the index page where the sticky header exists */
-body.index-page section[id] {
-    scroll-margin-top: 0px !important;
-}
+/*body.index-page section[id] {*/
+/*    !*margin-top: 10px !important;*!*/
+/*    !*scroll-margin-top: 5px !important;*!*/
+/*}*/
 /*section[id], [id]:target {*/
 /*    scroll-margin-top: 0px !important;*/
 /*}*/

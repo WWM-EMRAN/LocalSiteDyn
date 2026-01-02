@@ -88,28 +88,19 @@
   function initNavScrollSpy() {
     const navmenulinks = document.querySelectorAll('#navmenu a');
 
-    // function navmenuScrollspy() {
-    //   navmenulinks.forEach(navmenulink => {
-    //     if (!navmenulink.hash) return;
-    //     let section = document.querySelector(navmenulink.hash);
-    //     if (!section) return;
-    //
-    //     let position = window.scrollY + 200;
-    //     if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
-    //       document.querySelectorAll('#navmenu a.active').forEach(link => link.classList.remove('active'));
-    //       navmenulink.classList.add('active');
-    //     }
-    //   });
-    // }
-
     function navmenuScrollspy() {
       const links = document.querySelectorAll('#navmenu a');
       links.forEach(link => {
         if (!link.hash || link.hash === '#') return;
         const section = document.querySelector(link.hash); // or getElementById
         if (!section) return;
+        // if (!link.hash || link.hash === '#') return;
+        // if (link.closest('.dropdown')) return;
 
         // console.log('======>> initNavScrollSpy, navmenuScrollspy', link.hash, window.scrollY, section.offsetTop, section.offsetHeight);
+        const header = document.querySelector('#header');
+        const headerOffset = header ? header.offsetHeight : 0;
+        // const position = window.scrollY + headerOffset + 5;
 
         // const position = window.scrollY + 200;
         const position = window.scrollY;
@@ -119,6 +110,28 @@
         }
       });
     }
+
+    // function navmenuScrollspy() {
+    //   const links = document.querySelectorAll('#navmenu a');
+    //
+    //   // A threshold of 150px ensures the link changes when the title is
+    //   // clearly visible, not just touching the top edge.
+    //   const threshold = 150;
+    //   const position = window.scrollY + threshold;
+    //
+    //   links.forEach(link => {
+    //     if (!link.hash || link.hash === '#') return;
+    //     const section = document.querySelector(link.hash);
+    //     if (!section) return;
+    //
+    //     // Check if the current scroll position falls within the section boundaries
+    //     if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
+    //        // Remove active class from all links first
+    //        document.querySelectorAll('#navmenu a.active').forEach(a => a.classList.remove('active'));
+    //        link.classList.add('active');
+    //     }
+    //   });
+    // }
 
     // Bind to scroll and load
     window.initNavScrollSpy = initNavScrollSpy;
@@ -330,6 +343,90 @@
   });
 
 
+  /* ------------------------------------------------------------
+     * STEP 1: Click → Active state sync
+     * ---------------------------------------------------------- */
+    function initNavClickSync() {
+      const navLinks = document.querySelectorAll('#navmenu a.scrollto');
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', function () {
+
+          // Ignore invalid or non-section links
+          if (!this.hash || this.hash === '#') return;
+          if (this.closest('.dropdown')) return;
+
+          // Remove all existing active states
+          document.querySelectorAll('#navmenu a.active')
+            .forEach(a => a.classList.remove('active'));
+
+          // Mark clicked link active immediately
+          // this.classList.add('active');
+          this.classList.add('active');
+          link.addEventListener('click', function () {
+              if (!this.hash || this.hash === '#') return;
+              setNavActive(this);
+            });
+          // syncParentDropdownActive(this);
+
+        });
+      });
+    }
+
+    // function initNavClickSync() {
+    //   const navLinks = document.querySelectorAll('#navmenu a.scrollto');
+    //
+    //   navLinks.forEach(link => {
+    //     link.addEventListener('click', function () {
+    //
+    //       if (!this.hash || this.hash === '#') return;
+    //
+    //       // Let click immediately update state
+    //       setNavActive(this);
+    //     });
+    //   });
+    // }
+
+
+
+    /* ------------------------------------------------------------
+     * STEP 2: Reconcile scroll-spy (non-destructive)
+     * ---------------------------------------------------------- */
+    function reconcileNavActiveOnScroll() {
+      const links = document.querySelectorAll('#navmenu a.scrollto');
+
+      let currentSectionId = null;
+
+      links.forEach(link => {
+        if (!link.hash || link.hash === '#') return;
+
+        const section = document.querySelector(link.hash);
+        if (!section) return;
+
+        const rect = section.getBoundingClientRect();
+
+        // Section is considered active if its top is near viewport top
+        if (rect.top <= 120 && rect.bottom > 120) {
+          currentSectionId = link.hash;
+        }
+      });
+
+      if (!currentSectionId) return;
+
+      document.querySelectorAll('#navmenu a.active')
+        .forEach(a => a.classList.remove('active'));
+
+      const activeLink = document.querySelector(`#navmenu a[href="${currentSectionId}"]`);
+      // if (activeLink) activeLink.classList.add('active');
+      if (activeLink) {
+          activeLink.classList.add('active');
+          setNavActive(activeLink);
+          // syncParentDropdownActive(activeLink);
+        }
+
+    }
+
+
 
 
   /**
@@ -354,11 +451,34 @@
       else {
           console.warn("Scrollspy behavior initialization failed. Scrollspy will not work.");
       }
+
+      if (typeof reconcileNavActiveOnScroll === "function") {
+          console.log("Initializing reconcileNavActiveOnScroll behavior...");
+            // Keep scroll authoritative
+          document.addEventListener('scroll', reconcileNavActiveOnScroll, { passive: true });
+
+          // Run once on load
+          reconcileNavActiveOnScroll();
+      }
+      else {
+          console.warn("ReconcileNavActiveOnScroll behavior initialization failed. ReconcileNavActiveOnScroll will not work.");
+      }
+
       console.log("Navigation menu/submenu behavior initialized successfully.");
   }
   window.initNavigationBehavior = initNavigationBehavior;
 
 
+  /* ------------------------------------------------------------
+     * AUTO-INIT (after navigation is rendered)
+     * ---------------------------------------------------------- */
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      // setTimeout(initNavActiveBehavior, 0);
+      setTimeout(initNavigationBehavior, 0);
+    } else {
+      // document.addEventListener('DOMContentLoaded', initNavActiveBehavior);
+      document.addEventListener('DOMContentLoaded', initNavigationBehavior);
+    }
 
 
   /**
@@ -442,6 +562,31 @@
 
       });
   }
+
+
+  function clearNavActiveStates() {
+      // Clear active on all links
+      document.querySelectorAll('#navmenu a.active').forEach(a => a.classList.remove('active'));
+
+      // Clear active on all menu <li> (needed for parent highlight)
+      document.querySelectorAll('#navmenu li.active').forEach(li => li.classList.remove('active'));
+    }
+
+    function setNavActive(link) {
+      if (!link) return;
+
+      clearNavActiveStates();
+
+      // Mark the actual link active
+      link.classList.add('active');
+
+      // If this link is inside a dropdown, mark the parent <li> active too
+      const dropdownLi = link.closest('li.dropdown');
+      if (dropdownLi) {
+        dropdownLi.classList.add('active'); // <-- this matches CSS: li.active > a
+      }
+    }
+
 
 
 

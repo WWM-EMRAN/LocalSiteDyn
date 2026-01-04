@@ -2,7 +2,8 @@
   "section_info": {
     "title": "Honors and Awards_XX",
     "details": "_XXFormal recognition of scholarly merit and technical innovation, highlighting significant achievements in health informatics and software development. These distinctions underscore a high standard of excellence maintained throughout a multidisciplinary career spanning both academia and industry.",
-    "icon_class": "bi bi-award"
+    "icon_class": "bi bi-award",
+    "hashtag": "honors_awards"
   },
   "honorsawards": [
     {

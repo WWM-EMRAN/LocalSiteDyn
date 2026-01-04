@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS Function Tester</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .result-box { background: #f4f4f4; border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-top: 20px; }
+        pre { background: #272822; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        button { padding: 10px 15px; cursor: pointer; margin-right: 10px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>URL Path Details Tester</h1>
+    <p>Current Page URL: <strong id="current-url"></strong></p>
+
+    <!-- Buttons to trigger tests -->
+    <div>
+        <button onclick="runTest()">Run Function Now</button>
+        <button onclick="simulateURL('?mode=standard#publications')">Simulate Params/Hash</button>
+        <button onclick="simulateURL('?mode=one-page&user=test')">Simulate Multiple Params</button>
+        <button onclick="simulateURL('?mode=one-page#home')">Simulate Params With Hash</button>
+        <button onclick="simulateURL('?mode=one-page#home#about')">Simulate Params With Multiple Hash</button>
+        <button onclick="simulateURL('?mode=one-page&user=test#home#about')">Simulate Multiple Params With Multiple Hash</button>
+        <button onclick="resetURL()">Reset URL</button>
+    </div>
+
+    <div class="result-box">
+        <h3>Function Output (Array):</h3>
+        <pre id="output">Click "Run Function Now" to see results...</pre>
+    </div>
+
+    <script>
+        // --- YOUR FUNCTION ---
+        function getCurrentPathDetails() {
+            const pathName = window.location.pathname;
+            const fileName = pathName.substring(pathName.lastIndexOf('/') + 1) || 'index.html';
+            const urlParams = new URLSearchParams(window.location.search);
+            const allParams = Object.fromEntries(urlParams);
+            const hashes = window.location.hash || '';
+
+            return [pathName, fileName, allParams, hashes];
+        }
+
+        // --- TEST RUNNER LOGIC ---
+        function runTest() {
+            document.getElementById('current-url').textContent = window.location.href;
+            const results = getCurrentPathDetails();
+
+            // Format the result for display
+            document.getElementById('output').textContent = JSON.stringify(results, null, 4);
+            console.log("Function Output:", results);
+        }
+
+        // Helper to update URL without reloading for testing
+        function simulateURL(suffix) {
+            const newURL = window.location.pathname + suffix;
+            window.history.pushState({}, '', newURL);
+            runTest();
+        }
+
+        function resetURL() {
+            window.history.pushState({}, '', window.location.pathname);
+            runTest();
+        }
+
+        // Run on initial load
+        window.onload = runTest;
+    </script>
+</body>
+</html>

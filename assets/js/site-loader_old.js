@@ -5,17 +5,17 @@
 let BASE_DATA_PATH = './assets/data/';
 
 const JSON_FILES = [
-    'personal_info.json',
+    'personal_information.json',
     'site.json',
-    'key_metrics.json',
+    'key_information.json',
     'academic_information.json',
-    'professional_experience.json',
-    'expertise_achievements.json',
-    'skills.json',
+    'professional_experiences.json',
+    'expertise_skills_achievements.json',
+    'skills_tools.json',
     'honors_awards.json',
     'courses_trainings_certificates.json',
     'projects.json',
-    'memberships.json',
+    'oranisational_memberships.json',
     'sessions_events.json',
     'languages.json',
     'portfolios.json',

@@ -2,7 +2,8 @@
   "section_info": {
     "title": "Languages_XX",
     "details": "_XXA synthesis of multilingual skills enabling seamless integration into international research teams and the effective delivery of educational programmes. These capabilities enhance the capacity for cross-cultural collaboration and technical knowledge transfer within the ICT and higher education sectors. Language proficiency levels in Listening (L), Reading (R), Writing (W), and Speaking (S).",
-    "icon_class": "bi bi-translate"
+    "icon_class": "bi bi-translate",
+    "hashtag": "languages"
   },
   "languages": [
     {

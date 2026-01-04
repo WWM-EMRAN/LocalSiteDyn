@@ -2,7 +2,8 @@
   "section_info": {
     "title": "Academic Information_XX",
     "details": "_XXExploring the intersection of Deep Learning and the Bio-sciences to develop next-generation diagnostic and automation tools. I am committed to deepening the technical integration of AI within healthcare and human-computer interaction, focusing on model transparency and real-world scalability.",
-    "icon_class": "bx bxs-graduation"
+    "icon_class": "bx bxs-graduation",
+    "hashtag": "#academic_information"
   },
   "summary": {
     "title": "Summary_XX",
@@ -58,6 +59,7 @@
         {
           "type": "_XXResearch",
           "title": "_XXA Machine Learning-based Analysis of Sleep Patterns in Healthy Ageing using Physiological Signals.",
+          "tools": "Python, Numpy, Pandas, matplotlib, seaborn, mne-python, Scikit-learn, pytorch, gnn",
           "link": "#projects"
         }
       ],
@@ -109,6 +111,7 @@
         {
           "type": "_XXResearch",
           "title": "A Machine Learning-based Analysis of Sleep Patterns in Healthy Ageing using Physiological Signals.",
+          "tools": "Python, Numpy, Pandas, matplotlib, seaborn, mne-python, Scikit-learn, pytorch, gnn",
           "link": "#projects"
         }
       ],
@@ -148,9 +151,18 @@
         "thesis_length": "_XXover 50,000 words."
       },
       "research_projects": [
-        {"type": "Research", "title": "Channel Minimisation for Epileptic Seizure Detection and Prediction using Signal Processing and Machine Learning on Surface EEG Data.", "link": "#projects"},
-        {"type": "Project", "title": "Epileptic Seizure Detection using Single-channel Deep Learning Models on Continuous EEG Recordings from ICU Patients (A collaborative work with Monash University and Alfred Health).", "link": "#projects"},
-        {"type": "Project", "title": "Air Quality (Indoor Temperature) Prediction Based on Meteorological and Indoor Sensor Data (A MAAP Linkage ARC Project Funded by the Australian Research Council (ARC), and a Collaborative Work with Monash University and Sensor Industry AETMOS Australia).", "link": "#projects"}
+        {"type": "Research",
+          "title": "Channel Minimisation for Epileptic Seizure Detection and Prediction using Signal Processing and Machine Learning on Surface EEG Data.",
+          "tools": "Python, Numpy, Pandas, matplotlib, seaborn, Scikit-learn, mne-python",
+          "link": "#projects"},
+        {"type": "Project",
+          "title": "Epileptic Seizure Detection using Single-channel Deep Learning Models on Continuous EEG Recordings from ICU Patients (A collaborative work with Monash University and Alfred Health).",
+          "tools": "Python, Numpy, Pandas, matplotlib, seaborn, mne-python, Keras, Tensorflow",
+          "link": "#projects"},
+        {"type": "Project",
+          "title": "Air Quality (Indoor Temperature) Prediction Based on Meteorological and Indoor Sensor Data (A MAAP Linkage ARC Project Funded by the Australian Research Council (ARC), and a Collaborative Work with Monash University and Sensor Industry AETMOS Australia).",
+          "tools": "Python, Numpy, Pandas, matplotlib, seaborn, mne-python, Keras, Tensorflow",
+          "link": "#projects"}
       ],
       "related_skills": "_XXResearch · Health Informatics · Machine Learning · Deep Learning · Signal Processing · Electroencephalography (EEG) · Data Science · Data Analysis · Deep Learning · Python (Programming Language) · Biomedical Sciences · Biomedical Engineering and Instrumentation · LaTeX · Programming · Algorithms · GitHub"
     },
@@ -186,7 +198,20 @@
         {
           "type": "_XXResearch",
           "title": "Development of a Dictionary Application using Java (J2ME) and Enhanced Text Searching Algorithms.",
+          "tools": "Java, J2ME, Text Searching Algorithms",
           "link": "index.html#publications"
+        },
+        {
+          "type": "_XXProject",
+          "title": "Online Highway Bus Ticket Booking Management System.",
+          "tools": "HTML, CSS, JavaScript, PHP, MySQL",
+          "link": ""
+        },
+        {
+          "type": "_XXProject",
+          "title": "Online Shop Inventory Management System.",
+          "tools": "C#, ASP.NET, SQL Server",
+          "link": ""
         }
       ],
       "related_skills": "_XXResearch · Computer Programming · C · C++ · Java · Database · Machine Learning · Pattern Recognition · Microprocessor · System Analysis and Design · Data Science · Data Analysis · Deep Learning · Python (Programming Language) · Biomedical Sciences · Biomedical Engineering and Instrumentation · LaTeX · Programming · Algorithms · GitHub"

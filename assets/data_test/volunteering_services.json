@@ -2,7 +2,8 @@
   "section_info": {
     "title": "Volunteering Services_XX",
     "details": "_XXA versatile record of volunteering services spanning academic governance, student support, and community-based technical mentorship. These engagements reflect a dedication to social responsibility and the continuous advancement of the broader professional and academic community through active participation and service.",
-    "icon_class": "bx bxs-donate-heart"
+    "icon_class": "bx bxs-donate-heart",
+    "hashtag": "volunteering_services"
   },
   "volunteerings": [
     {

@@ -123,27 +123,27 @@
     "main_menu": [
       {"label": "Home_XX", "url": "#hero", "icon_class": "bx bx-home", "is_dropdown": false},
       {"label": "About_XX", "url": "#about", "icon_class": "bi bi-person", "is_dropdown": false},
-      {"label": "Academic Information_XX", "url": "#academicInformation", "icon_class": "bi bi-mortarboard", "is_dropdown": false},
-      {"label": "Professional Experiences_XX", "url": "#professionalExperiences", "icon_class": "bi bi-briefcase", "is_dropdown": false},
+      {"label": "Academic Information_XX", "url": "#academic_information", "icon_class": "bi bi-mortarboard", "is_dropdown": false},
+      {"label": "Professional Experiences_XX", "url": "#professional_experiences", "icon_class": "bi bi-briefcase", "is_dropdown": false},
       {
-        "label": "Expertise and Achievements_XX",
+        "label": "Expertise Skills and Achievements_XX",
         "url": "#",
         "icon_class": "bi bi-trophy",
         "is_dropdown": true,
         "submenu": [
-          {"label": "Skills and Tools_XX", "url": "#skillsTools", "icon_class": "bi bi-tools"},
-          {"label": "Honors and Awards_XX", "url": "#honorsAwards", "icon_class": "bi bi-award"},
-          {"label": "Courses and Certificates_XX", "url": "#coursesTrainingsCertificates", "icon_class": "bx bi-journal-bookmark-fill"},
+          {"label": "Skills and Tools_XX", "url": "#skills_tools", "icon_class": "bi bi-tools"},
+          {"label": "Honors and Awards_XX", "url": "#honors_awards", "icon_class": "bi bi-award"},
+          {"label": "Courses Training and Certificates_XX", "url": "#courses_trainings_certificates", "icon_class": "bx bi-journal-bookmark-fill"},
           {"label": "Projects_XX", "url": "#projects", "icon_class": "bi bi-lightbulb"},
-          {"label": "Memberships_XX", "url": "#memberships", "icon_class": "bi bi-people"},
-          {"label": "Sessions and Events_XX", "url": "#sessionsEvents", "icon_class": "bi bi-calendar-event"},
+          {"label": "Organisational Memberships_XX", "url": "#oranisational_memberships", "icon_class": "bi bi-people"},
+          {"label": "Sessions and Events_XX", "url": "#sessions_events", "icon_class": "bi bi-calendar-event"},
           {"label": "Languages_XX", "url": "#languages", "icon_class": "bx bx-conversation"},
           {"label": "Portfolios_XX", "url": "#portfolios", "icon_class": "bi-images"},
-          {"label": "Volunteering Services_XX", "url": "#volunteeringServices", "icon_class": "bx bxs-donate-heart"}
+          {"label": "Volunteering Services_XX", "url": "#volunteering_services", "icon_class": "bx bxs-donate-heart"}
         ]
       },
       {"label": "Publications_XX", "url": "#publications", "icon_class": "bx bi-journal-richtext", "is_dropdown": false},
-      {"label": "Contact Details_XX", "url": "#contactDetails", "icon_class": "bi bi-person-lines-fill", "is_dropdown": false}
+      {"label": "Contact Details_XX", "url": "#contact_details", "icon_class": "bi bi-person-lines-fill", "is_dropdown": false}
     ],
     "short_menu": [
       {"label": "Home_XX", "url": "./", "icon_class": "bx bx-home"},

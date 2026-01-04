@@ -1,8 +1,9 @@
 {
   "section_info": {
-    "title": "Memberships_XX",
+    "title": "Oranisational Memberships_XX",
     "details": "_XXSustained engagement with professional bodies and student-led organisations, encompassing both advisory roles and active memberships within the tertiary sector. These affiliations underscore a dedicated contribution to the advancement of information technology, biomedical engineering, and competitive programming standards.",
-    "icon_class": "bx bx-group"
+    "icon_class": "bx bx-group",
+    "hashtag": "oranisational_memberships"
   },
   "memberships": [
     {
@@ -34,14 +35,14 @@
       "membership_organization": [
         {
           "name": "Institute of Electrical and Electronics Engineers (IEEE)",
-          "location": "Burwood, Melbourne, VIC-3125, Australia",
-          "link": ""
+          "location": "",
+          "link": "https://www.ieee.org/"
         }
       ],
       "has_expiry": true,
       "timeframe_details": {
         "start_date": "Jul. 1, 2022",
-        "end_date": "Dec. 31, 2023"
+        "end_date": "Present"
       },
       "description_full": "Student Member of the Institute of Electrical and Electronics Engineers (IEEE), the world's largest technical professional organization dedicated to advancing technology for the benefit of humanity.",
       "image_path": "",
@@ -55,6 +56,27 @@
       "membership_organization": [
         {
           "name": "IEEE Engineering in Medicine and Biology Society (EMBS)",
+          "location": "",
+          "link": "https://www.embs.org/"
+        }
+      ],
+      "has_expiry": true,
+      "timeframe_details": {
+        "start_date": "Jul. 1, 2022",
+        "end_date": "Present"
+      },
+      "description_full": "Student Member of the IEEE Engineering in Medicine and Biology Society (EMBS), focusing on advancing the application of engineering sciences and technology to biology, medicine, and healthcare.",
+      "image_path": "",
+      "url_link": ""
+    },
+    {
+      "id_ref": "mem_ieeeyoungprof",
+      "title": "IEEE Young Professionals",
+      "icon_class": "bi bi-briefcase",
+      "role": "Member",
+      "membership_organization": [
+        {
+          "name": "Institute of Electrical and Electronics Engineers (IEEE)",
           "location": "Burwood, Melbourne, VIC-3125, Australia",
           "link": ""
         }
@@ -62,9 +84,9 @@
       "has_expiry": true,
       "timeframe_details": {
         "start_date": "Jul. 1, 2022",
-        "end_date": "Dec. 31, 2023"
+        "end_date": "Present"
       },
-      "description_full": "Student Member of the IEEE Engineering in Medicine and Biology Society (EMBS), focusing on advancing the application of engineering sciences and technology to biology, medicine, and healthcare.",
+      "description_full": "Member of the IEEE Young Professionals affinity group, dedicated to helping engineers and scientists transition into successful professional careers.",
       "image_path": "",
       "url_link": ""
     },
@@ -77,7 +99,7 @@
         {
           "name": "Deakin University Student Association (DUSA)_XX",
           "location": "Burwood, Melbourne, VIC-3125, Australia_XX",
-          "link": ""
+          "link": "https://www.dusa.org.au/"
         }
       ],
       "has_expiry": true,
@@ -128,27 +150,6 @@
         "end_date": "Dec. 31, 2023"
       },
       "description_full": "Member of the Deakin University Software Engineering Club (DSEC), actively participating in coding events, workshops, and technical seminars focused on software development and engineering best practices.",
-      "image_path": "",
-      "url_link": ""
-    },
-    {
-      "id_ref": "mem_ieeeyoungprof",
-      "title": "IEEE Young Professionals",
-      "icon_class": "bi bi-briefcase",
-      "role": "Member",
-      "membership_organization": [
-        {
-          "name": "Institute of Electrical and Electronics Engineers (IEEE)",
-          "location": "Burwood, Melbourne, VIC-3125, Australia",
-          "link": ""
-        }
-      ],
-      "has_expiry": true,
-      "timeframe_details": {
-        "start_date": "Jul. 1, 2022",
-        "end_date": "Dec. 31, 2023"
-      },
-      "description_full": "Member of the IEEE Young Professionals affinity group, dedicated to helping engineers and scientists transition into successful professional careers.",
       "image_path": "",
       "url_link": ""
     },

@@ -1,7 +1,9 @@
 {
   "section_info": {
     "title": "Copyright Information_XX",
-    "icon_class": "bx bx-copyright"
+    "details": "Reserved right to copy the contents_XX",
+    "icon_class": "bx bx-copyright",
+    "hashtag": "copyright"
   },
   "copyrights": [
     {

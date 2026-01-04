@@ -9,8 +9,10 @@ let SITE_DATA = {};
 const BASE_DATA_PATH = './assets/data/';
 const MAIN_MENU_PAGES = [
     ['index.html',
+    'index',
     '',
     '/',
+    './',
     'curriculum-vitae.html'],
     ['standard',
     'detailed']
@@ -49,7 +51,8 @@ const JSON_DATA_FILES = [
 
 // Main function to initilise the action to load data and populate site
 document.addEventListener('DOMContentLoaded', () => {
-    initializeSite(BASE_DATA_PATH, JSON_DATA_FILES, MAIN_MENU_PAGES);
+    // initializeSite(BASE_DATA_PATH, JSON_DATA_FILES, MAIN_MENU_PAGES);
+    ;
 });
 
 
@@ -89,19 +92,50 @@ function populateSite(main_menu_pages) {
     // Re-initialize common HTML components (background, navigation menu, etc) after DOM updates
     renderCommonElements(main_menu_pages);
 
-    const [pathName, fileName, allParams, hashes] = getCurrentPathDetails();
+    const [url, origin, pathName, fileName, allParams, hashes] = getCurrentPathDetails();
 
     // Re-initialize index page after DOM updates
     if (pathName.includes('index.html') || pathName === '/' || pathName.endsWith('/')) {
         renderIndexPage();
+        // ;
+    }
+    // Re-initialize section details page after DOM updates
+    else if (pathName.includes('section-details.html')) {
+        console.log("*******>>> Rendering section details page...");
+        sectionKey = allParams.section?.toLowerCase() || '';
+        console.log("*******>>> Section Key:", sectionKey);
+
+        renderSectionDetailsPage(sectionKey)
     }
     // Re-initialize CV page after DOM updates
     else if (pathName.includes('curriculum-vitae.html')) {
         renderCVPage();
+        // ;
+    }
+    // Default initialization of index page
+    else{
+        renderIndexPage();
+        // ;
     }
 
     // Re-initialize external libraries after DOM updates
     initExternalLibraries();
+
+    // // Initialize Navigation menu/submenu behaviour
+    // if (typeof window.initNavigationBehavior === "function") {
+    //     window.initNavigationBehavior();
+    // }
+    // else {
+    //     // This is the fallback for Index Page race conditions
+    //     document.addEventListener('DOMContentLoaded', () => {
+    //         if (typeof window.initNavigationBehavior === "function") {
+    //             window.initNavigationBehavior();
+    //         }
+    //     });
+    // }
+
+    // window.initNavScrollSpy();
+    // window.initNavigationBehavior();
 }
 
 
@@ -184,16 +218,20 @@ function renderCommonElements(main_menu_pages) {
     menuToRender = getMenuToRender(main_menu_pages);
 
     updateDocumentMetadata(SITE_DATA.site.site_info);
-    renderHeader(SITE_DATA.personal_info, SITE_DATA.site);
+    renderHeader(SITE_DATA.personal_information, SITE_DATA.site);
     renderMenuFooter(SITE_DATA.site.footer_meta, SITE_DATA.site.assets);
     renderPageFooter(SITE_DATA.site.footer_meta);
     renderNavigation({main_menu: menuToRender});
-    renderNavDropdowns();
+    // renderNavDropdowns();
 
     console.log("Rendering the common elements of the site finished successfully...");
 }
 
-function getCurrentPathDetails(paramNames=[]) {
+function getCurrentPathDetails() {
+    // 0. Main URL and origin
+    const url = window.location.href;
+    const origin = window.location.origin;
+
     // 1. File Name Fallback
     const pathName = window.location.pathname;
     // If path is just "/" or empty, default to "index.html"
@@ -201,14 +239,30 @@ function getCurrentPathDetails(paramNames=[]) {
 
     // 2. Query Parameter Fallback (Mode)
     const urlParams = new URLSearchParams(window.location.search);
-    // If ?mode is missing, default to ""
-    const allParams = paramNames.map(paramName => urlParams.get(paramName) || '');
+    // Pase all parameters to dictionary
+    const allParams = Object.fromEntries(urlParams) || {};
 
     // 3. Hash/Fragment Fallback (Section)
     // If #about is missing, hash will be an empty string ""
-    const hashes = window.location.hash.slice(1) || '';
+    const hashStr = window.location.hash || '';
+    // Split hash values
+    const hashes = hashStr.split('#').filter(Boolean);
+    // const hashes = hashStr.split('#');
 
-    return [pathName, fileName, allParams, hashes];
+    console.log("====> CURRENT URL INFO:",
+                        "\nURL              = ", url,
+                        "\nORIGIN           = ", origin,
+                        "\nPATH             = ", pathName,
+                        "\nPAGE             = ", fileName,
+                        "\nGET PARAMETERS   = ", allParams,
+                        "\nHASH VALS        = ", hashes);
+
+    // let hashStr = "#home#about";
+    // let parts = hashStr.split('#');
+    // console.log('===>', allParams, hashes); // true
+    // console.log('--->', allParams.mode, hashes[0]); // true
+
+    return [url, origin, pathName, fileName, allParams, hashes];
 }
 
 /**
@@ -218,12 +272,12 @@ function getCurrentPathDetails(paramNames=[]) {
 function getMenuToRender(main_menu_pages) {
     console.log("Determining the menu to render based on the current page...");
 
-    const [pathName, fileName, allParams, hashes] = getCurrentPathDetails(paramNames=['mode']);
-    const mode = allParams[0];
+    const [url, origin, pathName, fileName, allParams, hashes] = getCurrentPathDetails();
+    const mode = allParams.mode ?? '';
 
     let menuToRender;
 
-    console.log("Current page: ", fileName, mode, hashes);
+    // console.log("XXX====> CURRENT - PAGE:", fileName, " PARAMETERS:", allParams, " (CV) MODE:", mode, " HASH VAL:", hashes);
 
     if (main_menu_pages[0].includes(fileName)) {
         console.log("Rendering main/detailed menu to the sidebar...");
@@ -248,7 +302,7 @@ function getMenuToRender(main_menu_pages) {
         console.log("Rendering short menu to the sidebar...");
         menuToRender = SITE_DATA.site.navigation.short_menu;
     }
-    console.log("Menu to render: ", menuToRender);
+    // console.log("Menu to render: ", menuToRender);
     return menuToRender;
 }
 
@@ -277,7 +331,7 @@ function renderHeader(personalInfo, siteData) {
     // --- 1. Update Site Name in Header ---
     const siteNameElement = document.querySelector('#header .sitename');
     if (siteNameElement) {
-        // Corrected path to access the name from the root of personal_info
+        // Corrected path to access the name from the root of personal_information
         siteNameElement.textContent = personalInfo.name;
     }
 
@@ -302,7 +356,7 @@ function renderHeader(personalInfo, siteData) {
     const socialContainer = document.querySelector('#header .social-links');
     if (socialContainer && siteData.social_links) {
         socialContainer.innerHTML = siteData.social_links.main
-            .filter(link => link.platform !== 'google-old' && link.platform !== 'researchgate-old' && link.platform !== 'researchgate-fab') // Optional: filter out older/unused links
+            // .filter(link => link.platform !== 'google-old' && link.platform !== 'researchgate-old' && link.platform !== 'researchgate-fab') // Optional: filter out older/unused links
             .map(link => `
             <a href="${link.url}" target="_blank" class="${link.platform}">
                 <i class="${link.icon_class}"></i>
@@ -414,12 +468,11 @@ function renderNavigation(navigation) {
 
     // Loop through the selected menu array (either main_menu or details_menu)
     menuArray.forEach(item => {
-        // ... (rest of the logic inside the loop uses 'item' as before) ...
-
+        // console.log("---> Rendering menu item: ", item);
         // Class for the link: 'active scrollto' ONLY for #hero, 'scrollto' for all others
         // Note: For details_menu, we often want the "Back" link to be handled differently,
         // but for now, we continue the logic established for the main menu:
-        const linkClass = (item.url === '#hero' || item.url === './') ? 'active scrollto' : 'scrollto';
+        const linkClass = (item.url === '#hero' || item.url === './' || item.url === '/' || item.url === 'index.html') ? 'active scrollto' : 'scrollto';
         const finalLinkClass = linkClass;
 
         if (item.is_dropdown && item.submenu && item.submenu.length > 0) {
@@ -527,7 +580,7 @@ function renderIndexPage() {
         renderIndexHero()
         renderIndexAbout()
         renderIndexKeyMetrics()
-        renderIndexEducation()
+        renderIndexAcademicInformation()
         renderIndexProfessionalExperience()
         renderIndexExpertise()
         renderIndexSkills()
@@ -556,9 +609,9 @@ function renderIndexPage() {
  */
 function renderIndexHero() {
     const heroSection = document.getElementById('hero');
-    if (!heroSection || !SITE_DATA.personal_info || !SITE_DATA.site) return;
+    if (!heroSection || !SITE_DATA.personal_information || !SITE_DATA.site) return;
 
-    const personal = SITE_DATA.personal_info;
+    const personal = SITE_DATA.personal_information;
     const heroData = personal.hero;
     const siteAssets = SITE_DATA.site.assets;
 
@@ -613,9 +666,9 @@ function renderIndexHero() {
  */
 function renderIndexAbout() {
     const aboutSection = document.getElementById('about');
-    if (!aboutSection || !SITE_DATA.personal_info) return;
+    if (!aboutSection || !SITE_DATA.personal_information) return;
 
-    const info = SITE_DATA.personal_info;
+    const info = SITE_DATA.personal_information;
     const profile = info.profile_summary;
     const siteAssets = SITE_DATA.site.assets;
 
@@ -627,7 +680,7 @@ function renderIndexAbout() {
         titleH2.innerHTML = `${profile.title} ${printerLink}`;
     }
 
-    const introPara = aboutSection.querySelector('.section-title p');
+    const introPara = aboutSection.querySelector('.section-title h6');
     if (introPara) introPara.innerHTML = profile.intro_paragraph_html;
 
     // 2. Profile Image
@@ -689,7 +742,7 @@ function renderIndexAbout() {
         aboutTitle.innerHTML = `<i class="${info.about_full_text.icon_class} ms-2"></i> ${info.about_full_text.title}`;
     }
 
-    const aboutPara = aboutSection.querySelectorAll('.section-title p')[1];
+    const aboutPara = aboutSection.querySelectorAll('.section-title p')[0];
     if (aboutPara) aboutPara.innerHTML = info.about_full_text.paragraph_html;
 }
 
@@ -761,7 +814,7 @@ async function refreshKeyMetricsData() {
         });
     }
 
-    const totalInstitutions = SITE_DATA.education?.degrees?.length || 0;
+    const totalInstitutions = SITE_DATA.academic_information?.degrees?.length || 0;
     const totalCerts = SITE_DATA.courses_trainings_certificates?.coursestrainingscertificates?.length || 0;
 
     // 3. Update SITE_DATA in memory
@@ -812,7 +865,7 @@ async function renderIndexKeyMetrics() {
         titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
     }
 
-    const descPara = keyInfoSection.querySelector('.section-title p');
+    const descPara = keyInfoSection.querySelector('.section-title h6');
     if (descPara) {
         descPara.textContent = sectionInfo.details;
     }
@@ -959,24 +1012,27 @@ function renderIndexEducationItem(degree) {
 /**
  * Renders the Education section on the index page.
  */
-function renderIndexEducation() {
-    const eduSection = document.getElementById('educations');
-    if (!eduSection || !SITE_DATA.education) return;
+function renderIndexAcademicInformation() {
+    const eduSection = document.getElementById('academicInformation');
+    if (!eduSection || !SITE_DATA.academic_information) return;
 
-    const data = SITE_DATA.education;
+    const data = SITE_DATA.academic_information;
     const sectionInfo = data.section_info;
 
     // 1. Update Section Title and Description
     const header = eduSection.querySelector('.section-title');
-    if (header) {
-        header.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${sectionInfo.icon_class}"></i>
-                ${sectionInfo.title}
-                <a href="education-details.html"><i class="bx bx-link ms-2"></i></a>
-            </h2>
-            <p data-aos="fade-up">${sectionInfo.details}</p>
-        `;
+
+    // 1. Update Section Title and Description
+    const titleH2 = eduSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> 
+                            ${sectionInfo.title} 
+                            <a href="section-details.html?section=academic_information"> <i class="bx bx-link ms-2"></i></a>`;
+    }
+
+    const descPara = eduSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Render Summary Columns (Fixing the Selector)
@@ -1009,7 +1065,7 @@ function renderIndexEducation() {
             if (!renderedCategories.includes(degree.degree_level)) {
                 finalHtml += `
                     <div class="col-lg-12" data-aos="fade-up">
-                        <h2 class="resume-category-title">
+                        <h2 class="resume-category-title" data-aos="fade-up">
                             <i class="${degree.icon_class} me-1"></i> ${degree.degree_level}
                         </h2>
                     </div>`;
@@ -1109,16 +1165,17 @@ function renderIndexProfessionalExperience() {
     if (!expSection || !SITE_DATA.professional_experience) return;
 
     const data = SITE_DATA.professional_experience;
+    const sectionInfo = data.section_info;
 
-    // 1. Update Section Title and Intro
-    const sectionTitle = expSection.querySelector('.section-title');
-    if (sectionTitle) {
-        sectionTitle.querySelector('h2').innerHTML = `
-            <i class="${data.section_info.icon_class}"></i>
-            ${data.section_info.title}
-            <a href="/professionalExperience-details"><i class="bx bx-link ms-2"></i></a>
-        `;
-        sectionTitle.querySelector('p').textContent = data.section_info.details;
+    // 1. Update Section Title and Description
+    const titleH2 = expSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = expSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Render Summary (Expertise & Interests)
@@ -1148,14 +1205,14 @@ function renderIndexProfessionalExperience() {
     const experienceRow = expSection.querySelector('.container > .row[data-aos-delay="100"]');
     if (experienceRow) {
         experienceRow.innerHTML = data.experiences.map(cat => `
-            <div class="col-lg-12">
+            <div class="col-lg-12" data-aos="fade-up">
                 <div class="resume-category-group mb-5">
-                    <h2 class="resume-category-title">
+                    <h2 class="resume-category-title" data-aos="fade-up">
                         <i class="${cat.organisation[0].icon_class}"></i> ${cat.category}
                     </h2>
                     ${cat.organisation.map(org => `
                         <div class="ms-3 mb-4 mt-3">
-                            <h2 class="resume-title">
+                            <h2 class="resume-title" data-aos="fade-up">
                                 <i class="bi bi-building me-1"></i>
                                 <a href="${org.link}" target="_blank">${org.organization}<i class="bx bx-link-external ms-1 small"></i></a>
                                 <span class="ms-2 small text-muted fw-normal">
@@ -1181,17 +1238,18 @@ function renderIndexExpertise() {
     const expertiseSection = document.getElementById('expertiseAchievement');
     if (!expertiseSection || !SITE_DATA.expertise_achievements) return;
 
-    const expertiseInfo = SITE_DATA.expertise_achievements.section_info;
+    const expertiseInfo = SITE_DATA.expertise_achievements;
+    const sectionInfo = expertiseInfo.section_info;
 
-    // Update Main Section Header
-    const sectionTitle = expertiseSection.querySelector('.section-title');
-    if (sectionTitle) {
-        sectionTitle.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${expertiseInfo.icon_class}"></i> ${expertiseInfo.title}
-            </h2>
-            <p data-aos="fade-up">${expertiseInfo.details}</p>
-        `;
+    // Update Section Title and Description
+    const titleH2 = expertiseSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = expertiseSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 }
 
@@ -1222,25 +1280,25 @@ function renderIndexSkillItem(skill, delay) {
  */
 function renderIndexSkills() {
     const skillsSection = document.getElementById('skillsTools');
-    if (!skillsSection || !SITE_DATA.skills) return;
+    if (!skillsSection || !SITE_DATA.skills_tools) return;
 
-    const skillsInfo = SITE_DATA.skills.section_info;
-    const skillsList = SITE_DATA.skills.skills;
+    const data = SITE_DATA.skills_tools;
+    const skillsList = data.skills_tools;
+    const sectionInfo = data.section_info;
 
-    // 1. Update Sub-section Header
-    const header = skillsSection.querySelector('.section-title');
-    if (header) {
-        header.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${skillsInfo.icon_class}"></i> ${skillsInfo.title}
-                <a href="skillsAndTools-details.html"><i class="bx bx-link ms-2"></i></a>
-            </h2>
-            <p data-aos="fade-up">${skillsInfo.details}</p>
-        `;
+    // 1. Update Section Title and Description
+    const titleH2 = skillsSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = skillsSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Split Skills into Two Columns
-    const columns = skillsSection.querySelectorAll('.skills-content .col-lg-6');
+    const columns = skillsSection.querySelectorAll('.skills_tools-content .col-lg-6');
     if (columns.length >= 2) {
         const midpoint = Math.ceil(skillsList.length / 2);
         const leftSkills = skillsList.slice(0, midpoint);
@@ -1304,29 +1362,26 @@ function renderIndexHonorsAwardsItem(award, index) {
  * Target: #honorsAwards
  */
 function renderIndexHonorsAwards() {
-    const section = document.getElementById('honorsAwards');
-    if (!section || !SITE_DATA.honors_awards) return;
+    const honorsSection = document.getElementById('honorsAwards');
+    if (!honorsSection || !SITE_DATA.honors_awards) return;
 
     const data = SITE_DATA.honors_awards;
     const sectionInfo = data.section_info;
 
-    // 1. Update Section Header
-    const header = section.querySelector('.section-title');
-    if (header) {
-        header.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${sectionInfo.icon_class}"></i>
-                ${sectionInfo.title}
-                <a href="/honorsAndAwards-details">
-                    <i class="bx bx-link ms-2"></i>
-                </a>
-            </h2>
-            <p data-aos="fade-up">${sectionInfo.details}</p>
-        `;
+    // 1. Update Section Title and Description
+    const titleH2 = honorsSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = honorsSection.querySelector('.section-title h6');
+    // console.log('========>', descPara, sectionInfo.details);
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Render Awards Grid
-    const gridContainer = section.querySelector('.row.gy-4');
+    const gridContainer = honorsSection.querySelector('.row.gy-4');
     if (gridContainer) {
         gridContainer.innerHTML = data.honorsawards.map((award, index) =>
             renderIndexHonorsAwardsItem(award, index)
@@ -1365,29 +1420,26 @@ function renderIndexCourseItem(item, index) {
  * Labels are pulled from details.type based on the tags in filter_tags.
  */
 function renderIndexCourses() {
-    const section = document.getElementById('coursesTrainingsCertificates');
-    if (!section || !SITE_DATA.courses_trainings_certificates) return;
+    const coursesSection = document.getElementById('coursesTrainingsCertificates');
+    if (!coursesSection || !SITE_DATA.courses_trainings_certificates) return;
 
     const data = SITE_DATA.courses_trainings_certificates;
     const sectionInfo = data.section_info;
     const items = data.coursestrainingscertificates;
 
-    // 1. Update Section Header
-    const header = section.querySelector('.section-title');
-    if (header) {
-        header.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}
-                <a href="/coursesTrainingsAndCertificates-details">
-                    <i class="bx bx-link ms-2"></i>
-                </a>
-            </h2>
-            <p data-aos="fade-up">${sectionInfo.details}</p>
-        `;
+    // 1. Update Section Title and Description
+    const titleH2 = coursesSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = coursesSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Generate Dynamic Filter Menu based on Type Labels
-    const filterMenu = section.querySelector('.portfolio-filters');
+    const filterMenu = coursesSection.querySelector('.portfolio-filters');
     if (filterMenu) {
         const filterMap = {}; // To store mapping of tag -> Label from details.type
 
@@ -1425,7 +1477,7 @@ function renderIndexCourses() {
     }
 
     // 3. Render Top 12 Items with serial_no
-    const container = section.querySelector('.isotope-container');
+    const container = coursesSection.querySelector('.isotope-container');
     if (container) {
         const filteredItems = items
             .filter(item => item.serial_no && item.serial_no.trim() !== "")
@@ -1493,18 +1545,15 @@ function renderIndexProjects() {
     const data = SITE_DATA.projects;
     const sectionInfo = data.section_info;
 
-    // 1. Update Section Header with correct mapping
-    const header = projectSection.querySelector('.section-title');
-    if (header) {
-        header.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}
-                <a href="projects-details.html">
-                    <i class="bx bx-link ms-2"></i>
-                </a>
-            </h2>
-            <p data-aos="fade-up">${sectionInfo.details}</p>
-        `;
+    // 1. Update Section Title and Description
+    const titleH2 = projectSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = projectSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Render Project Grid
@@ -1570,19 +1619,15 @@ function renderIndexMemberships() {
     const data = SITE_DATA.memberships;
     const sectionInfo = data.section_info;
 
-    // 1. Update Section Header
-    const header = memSection.querySelector('.section-title');
-    if (header) {
-        header.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${sectionInfo.icon_class}"></i>
-                ${sectionInfo.title}
-                <a href="/memberships-details">
-                    <i class="bx bx-link ms-2"></i>
-                </a>
-            </h2>
-            <p data-aos="fade-up">${sectionInfo.details}</p>
-        `;
+    // 1. Update Section Title and Description
+    const titleH2 = memSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = memSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Render Membership Grid
@@ -1639,29 +1684,25 @@ function renderIndexSessionEventItem(item, index) {
  * Target: #sessionsEvents
  */
 function renderIndexSessionsEvents() {
-    const section = document.getElementById('sessionsEvents');
-    if (!section || !SITE_DATA.sessions_events) return;
+    const eventsSection = document.getElementById('sessionsEvents');
+    if (!eventsSection || !SITE_DATA.sessions_events) return;
 
     const data = SITE_DATA.sessions_events;
     const sectionInfo = data.section_info;
 
-    // 1. Update Section Header
-    const header = section.querySelector('.section-title');
-    if (header) {
-        header.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${sectionInfo.icon_class}"></i>
-                ${sectionInfo.title}
-                <a href="/sessions-events-details">
-                    <i class="bx bx-link ms-2"></i>
-                </a>
-            </h2>
-            <p data-aos="fade-up">${sectionInfo.details}</p>
-        `;
+    // 1. Update Section Title and Description
+    const titleH2 = eventsSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = eventsSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Render Session/Event Grid Items
-    const container = section.querySelector('.row.gy-4');
+    const container = eventsSection.querySelector('.row.gy-4');
     if (container) {
         container.innerHTML = data.sessionsevents.map((item, index) =>
             renderIndexSessionEventItem(item, index)
@@ -1737,19 +1778,15 @@ function renderIndexLanguages() {
     const data = SITE_DATA.languages;
     const sectionInfo = data.section_info;
 
-    // 1. Update Section Header
-    const header = langSection.querySelector('.section-title');
-    if (header) {
-        header.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${sectionInfo.icon_class || 'bi bi-translate'}"></i>
-                ${sectionInfo.title}
-                <a href="/languages-details">
-                    <i class="bx bx-link ms-2"></i>
-                </a>
-            </h2>
-            <p data-aos="fade-up">${sectionInfo.details}</p>
-        `;
+    // 1. Update Section Title and Description
+    const titleH2 = langSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = langSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Render Language Grid Items
@@ -1799,29 +1836,25 @@ function renderIndexPortfolioItem(item, index) {
  * Target: #portfolios
  */
 function renderIndexPortfolios() {
-    const section = document.getElementById('portfolios');
-    if (!section || !SITE_DATA.portfolios) return;
+    const portSection = document.getElementById('portfolios');
+    if (!portSection || !SITE_DATA.portfolios) return;
 
     const data = SITE_DATA.portfolios;
     const sectionInfo = data.section_info;
 
-    // 1. Update Section Header
-    const header = section.querySelector('.section-title');
-    if (header) {
-        header.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${sectionInfo.icon_class}"></i>
-                ${sectionInfo.title}
-                <a href="/portfolios-details">
-                    <i class="bx bx-link ms-2"></i>
-                </a>
-            </h2>
-            <p data-aos="fade-up">${sectionInfo.details}</p>
-        `;
+    // 1. Update Section Title and Description
+    const titleH2 = portSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = portSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Render Portfolio Grid Items
-    const container = section.querySelector('.row.gy-4');
+    const container = portSection.querySelector('.row.gy-4');
     if (container) {
         container.innerHTML = data.portfolios.map((item, index) =>
             renderIndexPortfolioItem(item, index)
@@ -1872,32 +1905,28 @@ function renderIndexVolunteeringItem(item, index) {
 
 /**
  * Renders the Volunteering section on the index page.
- * Target: #volunteerings
+ * Target: #volunteeringServices
  */
 function renderIndexVolunteering() {
-    const section = document.getElementById('volunteerings');
-    if (!section || !SITE_DATA.volunteerings) return;
+    const volSection = document.getElementById('volunteeringServices');
+    if (!volSection || !SITE_DATA.volunteering_services) return;
 
-    const data = SITE_DATA.volunteerings;
+    const data = SITE_DATA.volunteering_services;
     const sectionInfo = data.section_info;
 
-    // 1. Update Section Header
-    const header = section.querySelector('.section-title');
-    if (header) {
-        header.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${sectionInfo.icon_class}"></i>
-                ${sectionInfo.title}
-                <a href="/volunteering-details">
-                    <i class="bx bx-link ms-2"></i>
-                </a>
-            </h2>
-            <p data-aos="fade-up">${sectionInfo.details}</p>
-        `;
+    // 1. Update Section Title and Description
+    const titleH2 = volSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = volSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Render Volunteering Grid
-    const gridContainer = section.querySelector('.row.gy-4');
+    const gridContainer = volSection.querySelector('.row.gy-4');
     if (gridContainer) {
         gridContainer.innerHTML = data.volunteerings.map((item, index) =>
             renderIndexVolunteeringItem(item, index)
@@ -1939,26 +1968,25 @@ function renderIndexPublicationItem(item) {
  * Target: #publications
  */
 function renderIndexPublications() {
-    const section = document.getElementById('publications');
-    if (!section || !SITE_DATA.publications) return;
+    const pubSection = document.getElementById('publications');
+    if (!pubSection || !SITE_DATA.publications) return;
 
     const pubData = SITE_DATA.publications;
     const sectionInfo = pubData.section_info;
 
-    // 1. Update Section Title
-    const header = section.querySelector('.section-title');
-    if (header) {
-        header.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}
-                <a href="/publication-details"><i class="bx bx-link ms-2"></i></a>
-            </h2>
-            <p data-aos="fade-up">${sectionInfo.details}</p>
-        `;
+    // 1. Update Section Title and Description
+    const titleH2 = pubSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = pubSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Clear and Render Groups
-    const container = section.querySelector('.row');
+    const container = pubSection.querySelector('.row');
     if (container) {
         container.innerHTML = ''; // Clear static content
 
@@ -1971,7 +1999,7 @@ function renderIndexPublications() {
                 <div class="col-lg-12">
                     <div class="resume-category-group mb-5" data-aos="fade-up">
                         <h2 class="resume-category-title">
-                            <i class="${group.icon_class}"></i> ${group.type} (${group.items.length})
+                            <i class="${group.icon_class}"></i> ${group.type}:${group.sub_type} (${group.items.length})
                         </h2>
                         ${group.items.map(item => renderIndexPublicationItem(item)).join('')}
                     </div>
@@ -2012,26 +2040,26 @@ function renderIndexContactItem(contact, index) {
  * Target: #contacts
  */
 function renderIndexContacts() {
-    const section = document.getElementById('contacts');
-    if (!section || !SITE_DATA.contacts) return;
+    const contSection = document.getElementById('contactDetails');
+    if (!contSection || !SITE_DATA.contact_details) return;
 
-    const data = SITE_DATA.contacts;
+    const data = SITE_DATA.contact_details;
     const sectionInfo = data.section_info;
     const contactMethods = data.contacts;
 
-    // 1. Update Section Header
-    const header = section.querySelector('.section-title');
-    if (header) {
-        header.innerHTML = `
-            <h2 data-aos="fade-up">
-                <i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}
-            </h2>
-            <p data-aos="fade-up">${sectionInfo.details}</p>
-        `;
+    // 1. Update Section Title and Description
+    const titleH2 = contSection.querySelector('.section-title h2');
+    if (titleH2) {
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+    }
+
+    const descPara = contSection.querySelector('.section-title h6');
+    if (descPara) {
+        descPara.textContent = sectionInfo.details;
     }
 
     // 2. Render Contact Grid
-    const gridContainer = section.querySelector('.row.gy-4');
+    const gridContainer = contSection.querySelector('.row.gy-4');
     if (gridContainer) {
         // Clear existing items but preserve the map container
         const mapContainer = gridContainer.querySelector('.col-lg-12');
@@ -2083,7 +2111,7 @@ function renderStandardCV() {
         renderStandardCVHeader()
         renderStandardCVAbout()
         renderStandardCVKeyInfo()
-        renderStandardCVEducation()
+        renderStandardCVAcademicInformation()
         renderStandardCVExperience()
         renderStandardCVSkills()
         renderStandardCVAwards()
@@ -2111,11 +2139,11 @@ function renderStandardCV() {
  */
 function renderStandardCVHeader() {
     const headerSection = document.getElementById('cv-header');
-    if (!headerSection || !SITE_DATA.personal_info || !SITE_DATA.contacts) return;
+    if (!headerSection || !SITE_DATA.personal_information || !SITE_DATA.contact_details) return;
 
-    const personal = SITE_DATA.personal_info;
+    const personal = SITE_DATA.personal_information;
     const hero = personal.hero;
-    const contacts = SITE_DATA.contacts.contacts;
+    const contacts = SITE_DATA.contact_details.contacts;
 
     // 1. Update Profile Image
     // Uses the formal image path and ensures it's wrapped for the lightbox
@@ -2170,18 +2198,20 @@ function renderStandardCVHeader() {
  */
 function renderStandardCVAbout() {
     const aboutSection = document.getElementById('about');
-    if (!aboutSection || !SITE_DATA.personal_info) return;
+    if (!aboutSection || !SITE_DATA.personal_information) return;
 
-    const hero = SITE_DATA.personal_info.hero;
-    const keywards = hero.main_keywards;
+    const personal_information = SITE_DATA.personal_information;
+    // const hero = SITE_DATA.personal_information.hero;
+    // const keywards = hero.main_keywards;
 
     // Construct the summary dynamically
-    const summaryText = `
-        I am a research and development enthusiast in ${keywards.hero_slogan.map(s => s.text).join(', ')}, 
-        Generative AI, Explainability, Interpretability and Optimisation. 
-        Experienced in applied research in: ${keywards.expertise_keywards.slice(0, 4).join(', ')}. 
-        Involved in the academic and industrial collaboration researches and projects.
-    `;
+    // const summaryText = `
+    //     I am a research and development enthusiast in ${keywards.hero_slogan.map(s => s.text).join(', ')},
+    //     Generative AI, Explainability, Interpretability and Optimisation.
+    //     Experienced in applied research in: ${keywards.expertise_keywards.slice(0, 4).join(', ')}.
+    //     Involved in the academic and industrial collaboration researches and projects.
+    // `;
+    const summaryText = personal_information.profile_summary.intro_paragraph_html;
 
     const summaryParagraph = aboutSection.querySelector('p');
     if (summaryParagraph) {
@@ -2239,13 +2269,13 @@ async function renderStandardCVKeyInfo() {
 
 /**
  * Renders the Education section of the Standard CV page.
- * Target: #educations
+ * Target: #academicInformation
  */
-function renderStandardCVEducation() {
-    const educationSection = document.getElementById('educations');
-    if (!educationSection || !SITE_DATA.education) return;
+function renderStandardCVAcademicInformation() {
+    const educationSection = document.getElementById('academicInformation');
+    if (!educationSection || !SITE_DATA.academic_information) return;
 
-    const data = SITE_DATA.education;
+    const data = SITE_DATA.academic_information;
     const sectionInfo = data.section_info;
     const degrees = data.degrees;
 
@@ -2388,11 +2418,11 @@ function renderStandardCVExperience() {
  */
 function renderStandardCVSkills() {
     const skillsSection = document.getElementById('skillsTools');
-    if (!skillsSection || !SITE_DATA.skills) return;
+    if (!skillsSection || !SITE_DATA.skills_tools) return;
 
-    const data = SITE_DATA.skills;
+    const data = SITE_DATA.skills_tools;
     const sectionInfo = data.section_info;
-    const skills = data.skills;
+    const skills_tools = data.skills_tools;
 
     // 1. Update Section Header from JSON
     const headerElement = skillsSection.querySelector('.cv-section-title');
@@ -2400,13 +2430,13 @@ function renderStandardCVSkills() {
         headerElement.innerHTML = `<i class="${sectionInfo.icon_class} me-2"></i>${sectionInfo.title}`;
     }
 
-    const gridContainer = document.getElementById('skills-grid');
+    const gridContainer = document.getElementById('skills_tools-grid');
     if (!gridContainer) return;
 
-    // 2. Split skills into two columns
-    const midPoint = Math.ceil(skills.length / 2);
-    const leftColSkills = skills.slice(0, midPoint);
-    const rightColSkills = skills.slice(midPoint);
+    // 2. Split skills_tools into two columns
+    const midPoint = Math.ceil(skills_tools.length / 2);
+    const leftColSkills = skills_tools.slice(0, midPoint);
+    const rightColSkills = skills_tools.slice(midPoint);
 
     // Helper to generate the skill HTML block
     const renderSkillBlock = (skill) => `
@@ -2759,7 +2789,7 @@ function renderStandardCVPortfolios() {
                         <span class="fw-bold text-dark text-uppercase">
                             <i class="bi bi-github me-1"></i>${item.title}
                         </span>
-                        <span class="text-muted text-end">${repoHandle}</span>
+                        <br><span class="small italic text-muted text-end">${repoHandle}</span>
                     </div>
                     <div class="mt-1">
                         ${item.description}
@@ -2772,13 +2802,13 @@ function renderStandardCVPortfolios() {
 
 /**
  * Renders the Volunteering section of the Standard CV page.
- * Target: #volunteerings
+ * Target: #volunteeringServices
  */
 function renderStandardCVVolunteering() {
-    const section = document.getElementById('volunteerings');
-    if (!section || !SITE_DATA.volunteerings) return;
+    const section = document.getElementById('volunteeringServices');
+    if (!section || !SITE_DATA.volunteering_services) return;
 
-    const data = SITE_DATA.volunteerings;
+    const data = SITE_DATA.volunteering_services;
     const sectionInfo = data.section_info;
     const volunteerings = data.volunteerings;
 
@@ -2893,10 +2923,10 @@ function renderStandardCVPublications() {
  * Target: #contacts
  */
 function renderStandardCVContacts() {
-    const section = document.getElementById('contacts');
-    if (!section || !SITE_DATA.contacts) return;
+    const section = document.getElementById('contactDetails');
+    if (!section || !SITE_DATA.contact_details) return;
 
-    const data = SITE_DATA.contacts;
+    const data = SITE_DATA.contact_details;
     const sectionInfo = data.section_info;
     const contacts = data.contacts;
     const siteData = SITE_DATA.site;
@@ -2941,9 +2971,9 @@ function renderStandardCVContacts() {
 function renderStandardCVFooter() {
     const footerSection = document.getElementById('cv-footer');
     // Ensure data exists before proceeding
-    if (!footerSection || !SITE_DATA.personal_info) return;
+    if (!footerSection || !SITE_DATA.personal_information) return;
 
-    const personalInfo = SITE_DATA.personal_info;
+    const personalInfo = SITE_DATA.personal_information;
 
     // 1. Generate the date string
     const now = new Date();
@@ -2990,9 +3020,9 @@ function renderOnePageCV() {
         // Main page body
         renderOnePageCVHeader()
         renderOnePageCVMetrics()
-        // renderOnePageCVEducation()
-        // renderOnePageCVEducation2()
-        renderOnePageCVEducation3()
+        // renderOnePageCVAcademicInformation()
+        // renderOnePageCVAcademicInformation2()
+        renderOnePageCVAcademicInformation3()
         // renderOnePageCVExperience()
         // renderOnePageCVExperience2()
         renderOnePageCVExperience3()
@@ -3016,9 +3046,9 @@ function renderOnePageCV() {
  */
 function renderOnePageCVSidebarContact() {
     const sidebar = document.querySelector('#one-page-section .cv-sidebar');
-    if (!sidebar || !SITE_DATA.personal_info || !SITE_DATA.contacts) return;
+    if (!sidebar || !SITE_DATA.personal_information || !SITE_DATA.contact_details) return;
 
-    const contactsData = SITE_DATA.contacts;
+    const contactsData = SITE_DATA.contact_details;
     const { section_info: info, contacts } = contactsData;
     const siteAssets = SITE_DATA.site.assets;
 
@@ -3137,13 +3167,13 @@ function renderOnePageCVSidebarResearchArea(limit = 6) {
  */
 function renderOnePageCVSidebarPersonalSkills(limit = 4) {
     const sidebar = document.querySelector('#one-page-section .cv-sidebar');
-    if (!sidebar || !SITE_DATA.skills) return;
+    if (!sidebar || !SITE_DATA.skills_tools) return;
 
-    const { section_info: info, skills = [] } = SITE_DATA.skills;
+    const { section_info: info, skills_tools = [] } = SITE_DATA.skills_tools;
 
     // 1. Data Filtering: Find all matching categories
     const keywords = ['soft', 'management', 'leadership', 'personal'];
-    const matchedSkills = skills.filter(s =>
+    const matchedSkills = skills_tools.filter(s =>
         keywords.some(word => s.category.toLowerCase().includes(word))
     );
 
@@ -3185,12 +3215,12 @@ function renderOnePageCVSidebarPersonalSkills(limit = 4) {
  */
 function renderOnePageCVSidebarProgramming(limit = 7) {
     const sidebar = document.querySelector('#one-page-section .cv-sidebar');
-    if (!sidebar || !SITE_DATA.skills) return;
+    if (!sidebar || !SITE_DATA.skills_tools) return;
 
-    const { section_info: info, skills = [] } = SITE_DATA.skills;
+    const { section_info: info, skills_tools = [] } = SITE_DATA.skills_tools;
 
     // 1. Locate the "Programming" skill object
-    const progSkill = skills.find(s => s.category.toLowerCase().includes('programming'));
+    const progSkill = skills_tools.find(s => s.category.toLowerCase().includes('programming'));
 
     if (!progSkill) return;
 
@@ -3295,9 +3325,9 @@ function renderOnePageCVSidebarMemberships(limit = 4) {
  */
 function renderOnePageCVHeader() {
     const headerSection = document.querySelector('#one-page-section .header-section');
-    if (!headerSection || !SITE_DATA.personal_info) return;
+    if (!headerSection || !SITE_DATA.personal_information) return;
 
-    const personalInfo = SITE_DATA.personal_info;
+    const personalInfo = SITE_DATA.personal_information;
     const hero = personalInfo.hero;
 
     // 1. Update Name Header
@@ -3318,7 +3348,8 @@ function renderOnePageCVHeader() {
     // Note: Some templates might have the summary hidden or in a specific class
     const summaryPara = headerSection.querySelector('.one-page-summary');
     if (summaryPara) {
-        summaryPara.innerHTML = personalInfo.profile_summary?.intro_paragraph_html || "";
+        summaryPara.innerHTML = personalInfo.profile_summary?.intro_paragraph_short || "";
+        // summaryPara.innerHTML = personalInfo.profile_summary?.intro_paragraph_html || "";
     }
 }
 
@@ -3364,11 +3395,11 @@ async function renderOnePageCVMetrics() {
  * Maps data from degrees array in academic_information.json.
  * Target: #one-page-section .cv-main-body (Education Section)
  */
-function renderOnePageCVEducation() {
+function renderOnePageCVAcademicInformation() {
     const mainBody = document.querySelector('#one-page-section .cv-main-body');
-    if (!mainBody || !SITE_DATA.education) return;
+    if (!mainBody || !SITE_DATA.academic_information) return;
 
-    const data = SITE_DATA.education;
+    const data = SITE_DATA.academic_information;
     const sectionInfo = data.section_info;
     const degrees = data.degrees || [];
 
@@ -3430,11 +3461,11 @@ function renderOnePageCVEducation() {
  * Renders the Education section for the One-Page CV.
  * Groups degrees by 'degree_level' and loads title/icon from JSON.
  */
-function renderOnePageCVEducation2() {
+function renderOnePageCVAcademicInformation2() {
     const mainBody = document.querySelector('#one-page-section .cv-main-body');
-    if (!mainBody || !SITE_DATA.education) return;
+    if (!mainBody || !SITE_DATA.academic_information) return;
 
-    const data = SITE_DATA.education;
+    const data = SITE_DATA.academic_information;
     const sectionInfo = data.section_info;
     const degrees = data.degrees || [];
 
@@ -3525,11 +3556,11 @@ function renderOnePageCVEducation2() {
  * Groups degrees by 'degree_level' and loads title/icon from JSON.
  * More compact and less description
  */
-function renderOnePageCVEducation3() {
+function renderOnePageCVAcademicInformation3() {
     const mainBody = document.querySelector('#one-page-section .cv-main-body');
-    if (!mainBody || !SITE_DATA.education) return;
+    if (!mainBody || !SITE_DATA.academic_information) return;
 
-    const { section_info: info, degrees = [] } = SITE_DATA.education;
+    const { section_info: info, degrees = [] } = SITE_DATA.academic_information;
 
     // 1. Update Section Header from JSON
     const header = Array.from(mainBody.querySelectorAll('h6'))
@@ -4102,9 +4133,9 @@ function renderOnePageCVPortfolio(limit=2) {
  */
 function renderOnePageCVVolunteering(limit=2) {
     const mainBody = document.querySelector('#one-page-section .cv-main-body');
-    if (!mainBody || !SITE_DATA.volunteerings) return;
+    if (!mainBody || !SITE_DATA.volunteering_services) return;
 
-    const { section_info: info, volunteerings = [] } = SITE_DATA.volunteerings;
+    const { section_info: info, volunteerings = [] } = SITE_DATA.volunteering_services;
 
     // 1. Locate the correct header (look for bx-donate-heart or "Volunteering")
     const volHeader = Array.from(mainBody.querySelectorAll('h6'))
@@ -4131,6 +4162,115 @@ function renderOnePageCVVolunteering(limit=2) {
         }
     }
 }
+
+
+
+
+// *********************************************************************
+/**
+ * Generalised controller to render section details with a sticky title and row-based list.
+ * @param {string} sectionKey - The key in SITE_DATA (e.g., 'academic_information')
+ */
+function renderSectionDetailsPage(sectionKey) {
+    const data = SITE_DATA[sectionKey];
+    if (!data) return;
+    console.log(`Rendering ${sectionKey} details page...`);
+
+    // 1. Update the Sticky Title in the top bar
+    const stickyTitle = document.querySelector('.cv-nav-title');
+    if (stickyTitle) {
+        stickyTitle.innerHTML = `<i class="${data.section_info.icon_class} me-2"></i> ${data.section_info.title}`;
+    }
+
+    // 2. Update the Main Section Heading and tagline
+    const mainTitle = document.getElementById('section-main-title');
+    const mainDesc = document.getElementById('section-main-description');
+
+    if (mainTitle) {
+        mainTitle.innerHTML = `<i class="${data.section_info.icon_class} me-2"></i> ${data.section_info.title}`;
+    }
+    if (mainDesc) {
+        mainDesc.textContent = data.section_info.details;
+    }
+
+    // 3. Delegate list rendering based on section type
+    if (sectionKey === 'academic_information') {
+        console.log(`Showing ${sectionKey} details page:`, (sectionKey === 'academic_information'));
+        renderFullAcademicDetails(data.degrees);
+    }
+    else{
+        console.warn(`Unknown section type: ${sectionKey}`);
+    }
+}
+
+
+/**
+ * Renders every data point from the academic JSON into the details list.
+ */
+function renderFullAcademicDetails(degrees) {
+    const listContainer = document.getElementById('details-list-container');
+    if (!listContainer) return;
+
+    listContainer.innerHTML = ''; // Clear placeholders
+    console.log(`Rendering ${degrees.length} academic details...`);
+
+    degrees.forEach(item => {
+        // Prepare Research and Projects list
+        const researchHtml = item.research_and_project && item.research_and_project.length > 0
+            ? `<div class="mt-3">
+                <strong><i class="bi bi-flask me-1"></i> Research and Projects:</strong>
+                <ul class="ms-1 mt-1 mb-0">
+                    ${item.research_and_project.map(rp => `<li><strong>${rp.type}:</strong> ${rp.details}</li>`).join('')}
+                </ul>
+               </div>`
+            : '';
+
+        const itemHtml = `
+            <div class="resume-item shadow-sm p-4 mb-5 bg-white rounded" data-aos="fade-up">
+                <h4 class="text-muted text-uppercase mb-1">${item.degree_level}</h4>
+                <p class="fw-bold mb-1" style="font-size: 1.1rem;">${item.degree_title}</p>
+                <p class="text-secondary mb-2">${item.department}</p>
+                
+                <h5 class="institution-link mb-3">
+                    <i class="bi bi-building me-1"></i>
+                    <a href="${item.institution_url}" target="_blank">${item.institution}</a>
+                    <span class="ms-2 small text-muted fw-normal"><i class="bi bi-geo-alt me-1"></i> ${item.location}</span>
+                </h5>
+
+                <div class="mb-4 d-flex flex-wrap gap-2">
+                    <span class="badge badge-dates"><i class="bi bi-calendar3 me-1"></i> ${item.start_date} – ${item.end_date}</span>
+                    <span class="badge badge-duration"><i class="bi bi-hourglass-split me-1"></i> ${item.duration}</span>
+                    <span class="badge badge-institute"><i class="bi bi-person-workspace me-1"></i> ${item.enrollment_type}</span>
+                    <span class="badge badge-status"><i class="bx bx-medal me-1"></i> ${item.status}</span>
+                </div>
+
+                <div class="resume-description ps-3 border-start">
+                    <p class="mb-2"><strong>Specialisation:</strong> ${item.specialization}</p>
+                    
+                    ${item.funding ? `<p class="mb-2"><strong><i class="bi bi-currency-dollar me-1"></i> Funding:</strong> ${item.funding}</p>` : ''}
+                    
+                    <p class="mb-2"><strong><i class="bi bi-search me-1"></i> Research Topic:</strong> ${item.research_topic}</p>
+                    
+                    <p class="text-justify mb-3">${item.description}</p>
+                    
+                    ${item.thesis_title ? `<p class="fst-italic mb-3"><strong>Thesis:</strong> ${item.thesis_title}</p>` : ''}
+
+                    <p class="mb-2"><strong><i class="bi bi-activity me-1"></i> Activity:</strong> ${item.activity}</p>
+
+                    ${researchHtml}
+
+                    <div class="mt-3">
+                        <strong><i class="bi bi-tags me-1"></i> Skills:</strong>
+                        <small class="text-muted">${item.skills_tools.join(' · ')}</small>
+                    </div>
+                </div>
+            </div>
+        `;
+        listContainer.innerHTML += itemHtml;
+    });
+}
+
+
 
 
 

@@ -2,7 +2,8 @@
   "section_info": {
     "title": "Contact Details_XX",
     "details": "Formal channels for academic collaboration, technical consultation, and industrial partnerships within the Victorian tertiary sector and the global ICT industry. Communication is welcomed regarding research initiatives in machine learning research, doctoral study at Deakin University, or professional software development projects._XX",
-    "icon_class": "bi bi-person-lines-fill"
+    "icon_class": "bi bi-person-lines-fill",
+    "hashtag": "#contact_details"
   },
   "contacts": {
     "location": {
@@ -40,6 +41,24 @@
       "icon_class": "researchgate-icon-black",
       "text": "@Emran-Ali-2",
       "link": "https://www.researchgate.net/profile/Emran-Ali-2"
+    },
+    "google_scholar_cv": {
+      "title": "Google Scholar",
+      "icon_class": "g-scholar-icon",
+      "text": "@ej8d6LkAAAAJ",
+      "link": "https://scholar.google.com.au/citations?hl=en&user=ej8d6LkAAAAJ"
+    },
+    "researchgate_cv": {
+      "title": "ResearchGate",
+      "icon_class": "researchgate-icon",
+      "text": "@Emran-Ali-2",
+      "link": "https://www.researchgate.net/profile/Emran-Ali-2"
+    },
+    "website": {
+      "title": "Website",
+      "icon_class": "bi bi-globe",
+      "text": "http://emran.humachlab.com",
+      "link": "http://emran.humachlab.com"
     }
   }
 }

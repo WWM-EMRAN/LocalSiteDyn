@@ -1,8 +1,9 @@
 {
   "section_info": {
     "title": "Diary_XX",
+    "details": "Story of life_XX",
     "icon_class": "bi bi-journal-text",
-    "description": "Snippets of life_XX"
+    "hashtag": "diary"
   },
   "diaryentries": {
     "life": [

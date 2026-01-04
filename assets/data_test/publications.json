@@ -2,7 +2,8 @@
   "section_info": {
     "title": "Publications_XX",
     "details": "_XXA list of peer-reviewed articles, conference papers, and posters demonstrating research contributions. A formal record of peer-reviewed research outputs disseminated through high-impact international journals and academic conferences. These publications focus on the advancement of Deep Learning architectures and their strategic application in healthcare informatics and biosignal analysis. The work emphasises model explainability and mathematical optimisation within the computational science domain.",
-    "icon_class": "bi-journal-richtext"
+    "icon_class": "bi-journal-richtext",
+    "hashtag": "publications"
   },
   "publications": {
     "journals": {

@@ -2,7 +2,8 @@
   "section_info": {
     "title": "Projects_XX",
     "details": "_XXA versatile collection of academic and commercial projects illustrating technical expertise in data science, deep learning, and system automation. This work showcases the effective integration of complex data analytics with user-centric design to address critical needs in the biomedical and ICT industries.",
-    "icon_class": "bx bx-bulb" 
+    "icon_class": "bx bx-bulb",
+    "hashtag": "projects"
   },
   "projects": [
     {
@@ -11,6 +12,7 @@
       "role": "Graduate Researcher_XX",
       "icon_class": "bi bi-activity",
       "basic_details": "PhD Cotutelle Research_XX",
+      "organization": "",
       "timeframe_details": {
         "start_date": "Jan. 1, 2023",
         "end_date": "Present"

@@ -1,7 +1,9 @@
 {
   "section_info": {
     "title": "Gallery_XX",
-    "icon_class": "bi bi-images"
+    "details": "Snippets of life_XX",
+    "icon_class": "bi bi-images",
+    "hashtag": "gallery"
   },
   "categories": [
     {

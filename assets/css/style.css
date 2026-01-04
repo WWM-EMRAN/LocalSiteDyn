@@ -727,7 +727,7 @@ a, a:hover, a:focus, .navmenu a, .navmenu a:hover {
 .stats .stats-item p {
   padding: 10px 0 0 0;
   margin: 0 0 0 40px;
-  /*font-family: var(--heading-font), sans-serif;*/
+  font-family: var(--heading-font), sans-serif;
   font-size: 14px;
   color: color-mix(in srgb, var(--default-color), transparent 40%);
 }
@@ -1435,7 +1435,7 @@ html {
    ============================================================================= */
 
 /* Ensure the navigation bar stays above all other CV elements */
-#one-page-section .cv-header {
+#cv-page-section .cv-header {
     position: fixed; /* Fixes it to the viewport */
     top: 0;          /* Aligns to the very top */
     left: 0;         /* Ensures it starts from the left edge */
@@ -1467,7 +1467,7 @@ html {
 /*  width: 100%;*/
 /*}*/
 
-#one-page-section .cv-container {
+#cv-page-section .cv-container {
     margin-top: 60px; /* Adjust this to match your actual header height */
 }
 
@@ -1861,7 +1861,7 @@ body.mode-one-page .cv-section {
 /*=====================*/
 
 /* By default, show standard and hide one-page */
-#one-page-section {
+#cv-page-section {
     display: none;
 }
 
@@ -1879,7 +1879,7 @@ body.mode-standard #standard-section {
     display: block !important;
 }
 
-body.mode-standard #one-page-section {
+body.mode-standard #cv-page-section {
     display: none !important;
 }
 
@@ -1888,7 +1888,7 @@ body.mode-standard #one-page-section {
 
 
 /* --- One-Page Specific Style (70% Scale) --- */
-#one-page-section {
+#cv-page-section {
     font-family: 'Inter', sans-serif;
     font-size: 10px !important; /* Scaled down base font */
 }
@@ -1973,7 +1973,7 @@ body.mode-standard #one-page-section {
 /* Printing for one-page cv */
 @media print {
     /* 1. Only apply Flex/Sidebar logic to the One-Page ID */
-    #one-page-section .cv-paper-sheet {
+    #cv-page-section .cv-paper-sheet {
         display: flex !important;
         flex-direction: row !important;
         width: 100% !important;
@@ -1982,7 +1982,7 @@ body.mode-standard #one-page-section {
     }
 
     /* 2. Lock the Sidebar Width ONLY for One-Page */
-    #one-page-section .cv-sidebar {
+    #cv-page-section .cv-sidebar {
         flex: 0 0 30% !important;
         width: 30% !important;
         min-width: 30% !important;
@@ -1993,7 +1993,7 @@ body.mode-standard #one-page-section {
     }
 
     /* 3. Lock the Main Body Width ONLY for One-Page */
-    #one-page-section .cv-main-body {
+    #cv-page-section .cv-main-body {
         flex: 0 0 70% !important;
         width: 70% !important;
         background-color: #ffffff !important;
@@ -2017,4 +2017,134 @@ body.mode-standard #one-page-section {
         padding: 0 !important;
     }
 }
+
+
+
+
+/*--------------------------------------------------------------
+# General Details Section
+--------------------------------------------------------------*/
+.general-details .general-details-slider img {
+  width: 100%;
+}
+
+.general-details .general-details-slider .swiper-pagination {
+  margin-top: 20px;
+  position: relative;
+}
+
+.general-details .general-details-slider .swiper-pagination .swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  background-color: color-mix(in srgb, var(--default-color), transparent 85%);
+  opacity: 1;
+}
+
+.general-details .general-details-slider .swiper-pagination .swiper-pagination-bullet-active {
+  background-color: var(--accent-color);
+}
+
+/* From services */
+
+.general-details .general-list {
+  padding: 10px 30px;
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+  margin-bottom: 20px;
+  font-size: 14px; /**/
+}
+
+.general-details .general-list a {
+  display: block;
+  line-height: 1;
+  padding: 8px 0 8px 15px;
+  border-left: 3px solid color-mix(in srgb, var(--default-color), transparent 70%);
+  margin: 20px 0;
+  color: color-mix(in srgb, var(--default-color), transparent 20%);
+  transition: 0.3s;
+}
+
+.general-details .general-list a.active {
+  color: var(--heading-color);
+  font-weight: 700;
+  border-color: var(--accent-color);
+}
+
+.general-details .general-list a:hover {
+  border-color: var(--accent-color);
+}
+/* From services - END */
+
+.general-details .general-cat {
+  padding: 10px;
+  /* background-color: var(--light-background); */
+  /*background-color: rgba(8, 8, 8, 0.1);  */
+  background-color: color-mix(in srgb, var(--accent-color), transparent 90%);
+  box-shadow: 0px 0 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px; /* Adds spacing between divs */
+  /*border-radius: 10px; /* Optional: Add a border-radius for better visual separation */
+}
+
+.general-details .general-info {
+  padding: 30px;
+  box-shadow: 0px 0 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px; /* Adds spacing between divs */
+  /*border-radius: 10px; /* Optional: Add a border-radius for better visual separation */
+}
+
+.general-details .general-info h3 {
+  font-size: 16px; /*22*/
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 85%);
+}
+
+.general-details .general-info ul {
+  list-style: none;
+  padding: 0;
+  font-size: 14px; /*15*/
+}
+
+.general-details .general-info ul li+li {
+  margin-top: 10px;
+}
+
+.general-details .general-description {
+  padding-top: 30px;
+}
+
+.general-details .general-description h2 {
+  font-size: 16px; /*26*/
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.general-details .general-description p {
+  padding: 0;
+  color: color-mix(in srgb, var(--default-color), transparent 30%);
+  font-size: 14px; /**/
+}
+
+
+/* Responsive Image */
+.responsive-img {
+  width: 75%; /* Default width for larger screens */
+  max-width: 100%; /* Ensures the image doesn't exceed its container width */
+}
+
+@media (max-width: 768px) {
+  /* Adjust for screens 768px wide or smaller (e.g., tablets, mobile) */
+  .responsive-img {
+    width: 100%; /* Full width for smaller screens */
+  }
+}
+
+
+
+
+
+
+
+
+
 

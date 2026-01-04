@@ -19,16 +19,16 @@ const MAIN_MENU_PAGES = [
 ];
 const JSON_DATA_FILES = [
     'site.json',
-    'personal_info.json',
-    'key_metrics.json',
+    'personal_information.json',
+    'key_information.json',
     'academic_information.json',
-    'professional_experience.json',
-    'expertise_achievements.json',
-    'skills.json',
+    'professional_experiences.json',
+    'expertise_skills_achievements.json',
+    'skills_tools.json',
     'honors_awards.json',
     'courses_trainings_certificates.json',
     'projects.json',
-    'memberships.json',
+    'oranisational_memberships.json',
     'sessions_events.json',
     'languages.json',
     'portfolios.json',
@@ -52,6 +52,7 @@ const JSON_DATA_FILES = [
 // Main function to initilise the action to load data and populate site
 document.addEventListener('DOMContentLoaded', () => {
     initializeSite(BASE_DATA_PATH, JSON_DATA_FILES, MAIN_MENU_PAGES);
+    // ;
 });
 
 
@@ -91,16 +92,29 @@ function populateSite(main_menu_pages) {
     // Re-initialize common HTML components (background, navigation menu, etc) after DOM updates
     renderCommonElements(main_menu_pages);
 
-    const [pathName, fileName, allParams, hashes] = getCurrentPathDetails();
+    const [url, origin, pathName, fileName, allParams, hashes] = getCurrentPathDetails();
 
     // Re-initialize index page after DOM updates
     if (pathName.includes('index.html') || pathName === '/' || pathName.endsWith('/')) {
         renderIndexPage();
         // ;
     }
+    // Re-initialize section details page after DOM updates
+    else if (pathName.includes('section-details.html')) {
+        console.log("*******>>> Rendering section details page...");
+        sectionKey = allParams.section?.toLowerCase() || '';
+        console.log("*******>>> Section Key:", sectionKey);
+
+        renderSectionDetailsPage(sectionKey)
+    }
     // Re-initialize CV page after DOM updates
     else if (pathName.includes('curriculum-vitae.html')) {
         renderCVPage();
+        // ;
+    }
+    // Default initialization of index page
+    else{
+        renderIndexPage();
         // ;
     }
 
@@ -204,7 +218,7 @@ function renderCommonElements(main_menu_pages) {
     menuToRender = getMenuToRender(main_menu_pages);
 
     updateDocumentMetadata(SITE_DATA.site.site_info);
-    renderHeader(SITE_DATA.personal_info, SITE_DATA.site);
+    renderHeader(SITE_DATA.personal_information, SITE_DATA.site);
     renderMenuFooter(SITE_DATA.site.footer_meta, SITE_DATA.site.assets);
     renderPageFooter(SITE_DATA.site.footer_meta);
     renderNavigation({main_menu: menuToRender});
@@ -213,7 +227,11 @@ function renderCommonElements(main_menu_pages) {
     console.log("Rendering the common elements of the site finished successfully...");
 }
 
-function getCurrentPathDetails(paramNames=[]) {
+function getCurrentPathDetails() {
+    // 0. Main URL and origin
+    const url = window.location.href;
+    const origin = window.location.origin;
+
     // 1. File Name Fallback
     const pathName = window.location.pathname;
     // If path is just "/" or empty, default to "index.html"
@@ -221,14 +239,30 @@ function getCurrentPathDetails(paramNames=[]) {
 
     // 2. Query Parameter Fallback (Mode)
     const urlParams = new URLSearchParams(window.location.search);
-    // If ?mode is missing, default to ""
-    const allParams = paramNames.map(paramName => urlParams.get(paramName) || '');
+    // Pase all parameters to dictionary
+    const allParams = Object.fromEntries(urlParams) || {};
 
     // 3. Hash/Fragment Fallback (Section)
     // If #about is missing, hash will be an empty string ""
-    const hashes = window.location.hash.slice(1) || '';
+    const hashStr = window.location.hash || '';
+    // Split hash values
+    const hashes = hashStr.split('#').filter(Boolean);
+    // const hashes = hashStr.split('#');
 
-    return [pathName, fileName, allParams, hashes];
+    console.log("====> CURRENT URL INFO:",
+                        "\nURL              = ", url,
+                        "\nORIGIN           = ", origin,
+                        "\nPATH             = ", pathName,
+                        "\nPAGE             = ", fileName,
+                        "\nGET PARAMETERS   = ", allParams,
+                        "\nHASH VALS        = ", hashes);
+
+    // let hashStr = "#home#about";
+    // let parts = hashStr.split('#');
+    // console.log('===>', allParams, hashes); // true
+    // console.log('--->', allParams.mode, hashes[0]); // true
+
+    return [url, origin, pathName, fileName, allParams, hashes];
 }
 
 /**
@@ -238,12 +272,12 @@ function getCurrentPathDetails(paramNames=[]) {
 function getMenuToRender(main_menu_pages) {
     console.log("Determining the menu to render based on the current page...");
 
-    const [pathName, fileName, allParams, hashes] = getCurrentPathDetails(paramNames=['mode']);
-    const mode = allParams[0];
+    const [url, origin, pathName, fileName, allParams, hashes] = getCurrentPathDetails();
+    const mode = allParams.mode ?? '';
 
     let menuToRender;
 
-    console.log("====> CURRENT - PAGE:", fileName, " PARAMETERS:", allParams, " (CV) MODE:", mode, " HASH VAL:", hashes);
+    // console.log("XXX====> CURRENT - PAGE:", fileName, " PARAMETERS:", allParams, " (CV) MODE:", mode, " HASH VAL:", hashes);
 
     if (main_menu_pages[0].includes(fileName)) {
         console.log("Rendering main/detailed menu to the sidebar...");
@@ -297,7 +331,7 @@ function renderHeader(personalInfo, siteData) {
     // --- 1. Update Site Name in Header ---
     const siteNameElement = document.querySelector('#header .sitename');
     if (siteNameElement) {
-        // Corrected path to access the name from the root of personal_info
+        // Corrected path to access the name from the root of personal_information
         siteNameElement.textContent = personalInfo.name;
     }
 
@@ -434,7 +468,7 @@ function renderNavigation(navigation) {
 
     // Loop through the selected menu array (either main_menu or details_menu)
     menuArray.forEach(item => {
-        console.log("---> Rendering menu item: ", item);
+        // console.log("---> Rendering menu item: ", item);
         // Class for the link: 'active scrollto' ONLY for #hero, 'scrollto' for all others
         // Note: For details_menu, we often want the "Back" link to be handled differently,
         // but for now, we continue the logic established for the main menu:
@@ -545,21 +579,21 @@ function renderIndexPage() {
     try {
         renderIndexHero()
         renderIndexAbout()
-        renderIndexKeyMetrics()
+        renderIndexKeyInformation()
         renderIndexAcademicInformation()
-        renderIndexProfessionalExperience()
-        renderIndexExpertise()
-        renderIndexSkills()
+        renderIndexProfessionalExperiences()
+        renderIndexExpertiseSkillsAchievements()
+        renderIndexSkillsTools()
         renderIndexHonorsAwards()
-        renderIndexCourses()
+        renderIndexCoursesTrainingsCertificates()
         renderIndexProjects()
-        renderIndexMemberships()
+        renderIndexOrganisationalMemberships()
         renderIndexSessionsEvents()
         renderIndexLanguages()
         renderIndexPortfolios()
-        renderIndexVolunteering()
+        renderIndexVolunteeringServices()
         renderIndexPublications()
-        renderIndexContacts()
+        renderIndexContactDetails()
     }
     catch (error) {
         console.error("Error rendering the index page:", error);
@@ -570,14 +604,14 @@ function renderIndexPage() {
 
 
 /**
- * Renders the Hero section on the index page using data from site.json and personal_info.json.
+ * Renders the Hero section on the index page using data from site.json and personal_information.json.
  * Target: #hero
  */
 function renderIndexHero() {
     const heroSection = document.getElementById('hero');
-    if (!heroSection || !SITE_DATA.personal_info || !SITE_DATA.site) return;
+    if (!heroSection || !SITE_DATA.personal_information || !SITE_DATA.site) return;
 
-    const personal = SITE_DATA.personal_info;
+    const personal = SITE_DATA.personal_information;
     const heroData = personal.hero;
     const siteAssets = SITE_DATA.site.assets;
 
@@ -632,9 +666,9 @@ function renderIndexHero() {
  */
 function renderIndexAbout() {
     const aboutSection = document.getElementById('about');
-    if (!aboutSection || !SITE_DATA.personal_info) return;
+    if (!aboutSection || !SITE_DATA.personal_information) return;
 
-    const info = SITE_DATA.personal_info;
+    const info = SITE_DATA.personal_information;
     const profile = info.profile_summary;
     const siteAssets = SITE_DATA.site.assets;
 
@@ -748,14 +782,14 @@ function calculateUniqueYears(intervals) {
  * Should be called after fetchSiteData but before any render functions.
  */
 async function refreshKeyMetricsData() {
-    if (!SITE_DATA.key_metrics || !SITE_DATA.site) return;
+    if (!SITE_DATA.key_information || !SITE_DATA.site) return;
 
     console.log("Recalculating key metrics and updating cache...");
 
     // 1. Calculate Unique Teaching/Training Years
     const teachingIntervals = [];
-    if (SITE_DATA.professional_experience?.experiences) {
-        SITE_DATA.professional_experience.experiences.forEach(cat => {
+    if (SITE_DATA.professional_experiences?.experiences) {
+        SITE_DATA.professional_experiences.experiences.forEach(cat => {
             if (cat.category.includes("Teaching") || cat.category.includes("Training")) {
                 cat.organisation.forEach(org => {
                     org.roles.forEach(role => {
@@ -784,7 +818,7 @@ async function refreshKeyMetricsData() {
     const totalCerts = SITE_DATA.courses_trainings_certificates?.coursestrainingscertificates?.length || 0;
 
     // 3. Update SITE_DATA in memory
-    SITE_DATA.key_metrics.metrics.forEach(metric => {
+    SITE_DATA.key_information.metrics.forEach(metric => {
         if (metric.description.includes("teaching and research experience")) {
             metric.value = totalTeachingYears || metric.value;
         } else if (metric.strong_text.includes("Projects")) {
@@ -812,16 +846,16 @@ async function refreshKeyMetricsData() {
 
 /**
  * Renders the Key Information (stats) section dynamically
- * Target: #keyInfo
+ * Target: #key_information
  */
-async function renderIndexKeyMetrics() {
+async function renderIndexKeyInformation() {
     // Recalculate the key_info from all data sources
     await refreshKeyMetricsData();
 
-    const keyInfoSection = document.getElementById('keyInfo');
-    if (!keyInfoSection || !SITE_DATA.key_metrics) return;
+    const keyInfoSection = document.getElementById('key_information');
+    if (!keyInfoSection || !SITE_DATA.key_information) return;
 
-    const data = SITE_DATA.key_metrics;
+    const data = SITE_DATA.key_information;
     const sectionInfo = data.section_info;
     const metrics = data.metrics;
 
@@ -931,7 +965,7 @@ function renderIndexEducationItem(degree) {
                 </span>
             </h4>
         </div>
-        
+
         <div class="mb-3 d-flex flex-wrap gap-2">
             <span class="badge badge-dates">
                 <i class="bi bi-calendar3 me-1"></i> ${degree.timeframe_details.start_date} – ${degree.timeframe_details.end_date}
@@ -952,6 +986,7 @@ function renderIndexEducationItem(degree) {
 
         <div class="ms-2">
             <p class="mb-2"><strong>Specialisation:</strong> ${degree.specialisation}</p>
+            ${degree.thesis_details.thesis_title ? `<p><strong>Thesis:</strong> ${degree.thesis_details.thesis_title} (${degree.thesis_details.thesis_length})</p>` : ''}
             <details class="details-box">
                 <summary class="badge badge-type border-0 text-white" style="font-size: 11px; cursor: pointer;">
                     <i class="bi bi-eye me-1"></i> More Details
@@ -960,7 +995,7 @@ function renderIndexEducationItem(degree) {
                     <p><strong>Degree: </strong> ${degree.degree_short_name}</p>
                     ${collaborationHtml}
                     ${degree.scholarship ? `<p><strong>Funding:</strong> ${degree.scholarship.scholarship_name}</p>` : ''}
-                    <p><strong>Research Topic:</strong> ${degree.research_topic}</p>
+                    <p><strong><i class="bi bi-lightbulb me-1"></i>Research Topic:</strong> ${degree.research_topic}</p>
                     <p><strong>Description:</strong> ${degree.description_full}</p>
                     <div class="ms-2">
                         <strong>Research and Projects:</strong>
@@ -968,18 +1003,19 @@ function renderIndexEducationItem(degree) {
                             ${degree.research_projects.map(rp => `<li><strong>${rp.type}:</strong> ${rp.title}</li>`).join('')}
                         </ol>
                     </div>
-                    <p class="mb-1 mt-2"><strong>Skills:</strong> <small class="text-muted">${degree.related_skills}</small></p>
+                    <p class="mb-1 mt-2"><strong><i class="bi bi-tags me-1"></i> Skills:</strong> <span class="text-muted">${degree.related_skills}</span></p>
                 </div>
             </details>
         </div>
     </div>`;
 }
 
+
 /**
  * Renders the Education section on the index page.
  */
 function renderIndexAcademicInformation() {
-    const eduSection = document.getElementById('academicInformation');
+    const eduSection = document.getElementById('academic_information');
     if (!eduSection || !SITE_DATA.academic_information) return;
 
     const data = SITE_DATA.academic_information;
@@ -991,7 +1027,9 @@ function renderIndexAcademicInformation() {
     // 1. Update Section Title and Description
     const titleH2 = eduSection.querySelector('.section-title h2');
     if (titleH2) {
-        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> ${sectionInfo.title}`;
+        titleH2.innerHTML = `<i class="${sectionInfo.icon_class}"></i> 
+                            ${sectionInfo.title} 
+                            <a href="section-details.html?section=academic_information"> <i class="bx bx-link ms-2"></i></a>`;
     }
 
     const descPara = eduSection.querySelector('.section-title h6');
@@ -1046,7 +1084,7 @@ function renderIndexAcademicInformation() {
 
 /**
  * Renders an individual professional experience role.
- * @param {Object} role - The role object from professional_experience.json.
+ * @param {Object} role - The role object from professional_experiences.json.
  * @returns {string} - The HTML string for the resume item.
  */
 function renderIndexExperienceItem(role) {
@@ -1114,7 +1152,7 @@ function renderIndexExperienceItem(role) {
                 ${courseHtml}
                 <p class="mt-2 mb-3">
                     <strong><i class="bi bi-tags me-1"></i> Skills:</strong>
-                    <small class="text-muted">${role.related_skills}</small>
+                    <span class="text-muted">${role.related_skills}</span>
                 </p>
             </div>
         </details>
@@ -1124,11 +1162,11 @@ function renderIndexExperienceItem(role) {
 /**
  * Renders the Professional Experiences section on the index page.
  */
-function renderIndexProfessionalExperience() {
-    const expSection = document.getElementById('professionalExperiences');
-    if (!expSection || !SITE_DATA.professional_experience) return;
+function renderIndexProfessionalExperiences() {
+    const expSection = document.getElementById('professional_experiences');
+    if (!expSection || !SITE_DATA.professional_experiences) return;
 
-    const data = SITE_DATA.professional_experience;
+    const data = SITE_DATA.professional_experiences;
     const sectionInfo = data.section_info;
 
     // 1. Update Section Title and Description
@@ -1196,13 +1234,13 @@ function renderIndexProfessionalExperience() {
 
 /**
  * Renders the top-level Expertise, Skills and Achievements section header.
- * Target: #expertiseAchievement
+ * Target: #expertise_skills_achievements
  */
-function renderIndexExpertise() {
-    const expertiseSection = document.getElementById('expertiseAchievement');
-    if (!expertiseSection || !SITE_DATA.expertise_achievements) return;
+function renderIndexExpertiseSkillsAchievements() {
+    const expertiseSection = document.getElementById('expertise_skills_achievements');
+    if (!expertiseSection || !SITE_DATA.expertise_skills_achievements) return;
 
-    const expertiseInfo = SITE_DATA.expertise_achievements;
+    const expertiseInfo = SITE_DATA.expertise_skills_achievements;
     const sectionInfo = expertiseInfo.section_info;
 
     // Update Section Title and Description
@@ -1240,13 +1278,13 @@ function renderIndexSkillItem(skill, delay) {
 
 /**
  * Renders the Skills and Tools sub-section with progress bars.
- * Target: #skillsTools
+ * Target: #skills_tools
  */
-function renderIndexSkills() {
-    const skillsSection = document.getElementById('skillsTools');
-    if (!skillsSection || !SITE_DATA.skills) return;
+function renderIndexSkillsTools() {
+    const skillsSection = document.getElementById('skills_tools');
+    if (!skillsSection || !SITE_DATA.skills_tools) return;
 
-    const data = SITE_DATA.skills;
+    const data = SITE_DATA.skills_tools;
     const skillsList = data.skills;
     const sectionInfo = data.section_info;
 
@@ -1323,10 +1361,10 @@ function renderIndexHonorsAwardsItem(award, index) {
 
 /**
  * Renders the Honors and Awards section on the index page.
- * Target: #honorsAwards
+ * Target: #honors_awards
  */
 function renderIndexHonorsAwards() {
-    const honorsSection = document.getElementById('honorsAwards');
+    const honorsSection = document.getElementById('honors_awards');
     if (!honorsSection || !SITE_DATA.honors_awards) return;
 
     const data = SITE_DATA.honors_awards;
@@ -1339,7 +1377,7 @@ function renderIndexHonorsAwards() {
     }
 
     const descPara = honorsSection.querySelector('.section-title h6');
-    console.log('========>', descPara, sectionInfo.details);
+    // console.log('========>', descPara, sectionInfo.details);
     if (descPara) {
         descPara.textContent = sectionInfo.details;
     }
@@ -1369,7 +1407,7 @@ function renderIndexCourseItem(item, index) {
                 <img class="img-fluid" alt="${item.title}" src="${item.image_path}">
                 <div class="portfolio-info">
                     <h4>${item.title}</h4>
-                    <p>${item.details.type}</p>
+                    <p>${item.source}</p>
                     <div class="portfolio-links">
                         <a href="${item.image_path}" title="${item.title}" data-gallery="portfolio-gallery-cert" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
                         <a href="${item.link_target}" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
@@ -1383,8 +1421,8 @@ function renderIndexCourseItem(item, index) {
  * Renders the Courses section with dynamic filtering.
  * Labels are pulled from details.type based on the tags in filter_tags.
  */
-function renderIndexCourses() {
-    const coursesSection = document.getElementById('coursesTrainingsCertificates');
+function renderIndexCoursesTrainingsCertificates() {
+    const coursesSection = document.getElementById('courses_trainings_certificates');
     if (!coursesSection || !SITE_DATA.courses_trainings_certificates) return;
 
     const data = SITE_DATA.courses_trainings_certificates;
@@ -1531,7 +1569,7 @@ function renderIndexProjects() {
 
 /**
  * Renders an individual Membership item for the index page.
- * @param {Object} membership - The membership object from memberships.json.
+ * @param {Object} membership - The membership object from oranisational_memberships.json.
  * @param {number} index - The index for AOS delay calculation.
  * @returns {string} - The HTML string for the service item.
  */
@@ -1551,7 +1589,7 @@ function renderIndexMembershipItem(membership, index) {
             </div>
             <div>
                 <h4 class="title">
-                    <a href="/memberships-details#${membership.id_ref}" class="stretched-link">
+                    <a href="/oranisational_memberships-details#${membership.id_ref}" class="stretched-link">
                         ${membership.title}
                     </a>
                 </h4>
@@ -1574,13 +1612,13 @@ function renderIndexMembershipItem(membership, index) {
 
 /**
  * Renders the Memberships section on the index page.
- * Target: #memberships
+ * Target: #oranisational_memberships
  */
-function renderIndexMemberships() {
-    const memSection = document.getElementById('memberships');
-    if (!memSection || !SITE_DATA.memberships) return;
+function renderIndexOrganisationalMemberships() {
+    const memSection = document.getElementById('oranisational_memberships');
+    if (!memSection || !SITE_DATA.oranisational_memberships) return;
 
-    const data = SITE_DATA.memberships;
+    const data = SITE_DATA.oranisational_memberships;
     const sectionInfo = data.section_info;
 
     // 1. Update Section Title and Description
@@ -1645,10 +1683,10 @@ function renderIndexSessionEventItem(item, index) {
 
 /**
  * Renders the Sessions and Events section on the index page.
- * Target: #sessionsEvents
+ * Target: #sessions_events
  */
 function renderIndexSessionsEvents() {
-    const eventsSection = document.getElementById('sessionsEvents');
+    const eventsSection = document.getElementById('sessions_events');
     if (!eventsSection || !SITE_DATA.sessions_events) return;
 
     const data = SITE_DATA.sessions_events;
@@ -1869,10 +1907,10 @@ function renderIndexVolunteeringItem(item, index) {
 
 /**
  * Renders the Volunteering section on the index page.
- * Target: #volunteeringServices
+ * Target: #volunteering_services
  */
-function renderIndexVolunteering() {
-    const volSection = document.getElementById('volunteeringServices');
+function renderIndexVolunteeringServices() {
+    const volSection = document.getElementById('volunteering_services');
     if (!volSection || !SITE_DATA.volunteering_services) return;
 
     const data = SITE_DATA.volunteering_services;
@@ -1963,7 +2001,7 @@ function renderIndexPublications() {
                 <div class="col-lg-12">
                     <div class="resume-category-group mb-5" data-aos="fade-up">
                         <h2 class="resume-category-title">
-                            <i class="${group.icon_class}"></i> ${group.type}:${group.sub_type} (${group.items.length})
+                            <i class="${group.icon_class}"></i> ${group.type}: ${group.sub_type} (${group.items.length})
                         </h2>
                         ${group.items.map(item => renderIndexPublicationItem(item)).join('')}
                     </div>
@@ -2003,8 +2041,8 @@ function renderIndexContactItem(contact, index) {
  * Renders the Contacts section on the index page.
  * Target: #contacts
  */
-function renderIndexContacts() {
-    const contSection = document.getElementById('contactDetails');
+function renderIndexContactDetails() {
+    const contSection = document.getElementById('contact_details');
     if (!contSection || !SITE_DATA.contact_details) return;
 
     const data = SITE_DATA.contact_details;
@@ -2074,20 +2112,20 @@ function renderStandardCV() {
     try {
         renderStandardCVHeader()
         renderStandardCVAbout()
-        renderStandardCVKeyInfo()
+        renderStandardCVKeyInformation()
         renderStandardCVAcademicInformation()
-        renderStandardCVExperience()
-        renderStandardCVSkills()
-        renderStandardCVAwards()
-        renderStandardCVCourses()
+        renderStandardCVProfessionalExperiences()
+        renderStandardCVSkillsTools()
+        renderStandardCVHonorsAwards()
+        renderStandardCVCoursesTrainingsCertificates()
         renderStandardCVProjects()
-        renderStandardCVMemberships()
+        renderStandardCVOrganisationalMemberships()
         renderStandardCVSessionsEvents()
         renderStandardCVLanguages()
         renderStandardCVPortfolios()
-        renderStandardCVVolunteering()
+        renderStandardCVVolunteeringServices()
         renderStandardCVPublications()
-        renderStandardCVContacts()
+        renderStandardCVContactDetails()
         renderStandardCVFooter()
     }
     catch (error){
@@ -2103,9 +2141,9 @@ function renderStandardCV() {
  */
 function renderStandardCVHeader() {
     const headerSection = document.getElementById('cv-header');
-    if (!headerSection || !SITE_DATA.personal_info || !SITE_DATA.contact_details) return;
+    if (!headerSection || !SITE_DATA.personal_information || !SITE_DATA.contact_details) return;
 
-    const personal = SITE_DATA.personal_info;
+    const personal = SITE_DATA.personal_information;
     const hero = personal.hero;
     const contacts = SITE_DATA.contact_details.contacts;
 
@@ -2162,10 +2200,10 @@ function renderStandardCVHeader() {
  */
 function renderStandardCVAbout() {
     const aboutSection = document.getElementById('about');
-    if (!aboutSection || !SITE_DATA.personal_info) return;
+    if (!aboutSection || !SITE_DATA.personal_information) return;
 
-    const personal_info = SITE_DATA.personal_info;
-    // const hero = SITE_DATA.personal_info.hero;
+    const personal_information = SITE_DATA.personal_information;
+    // const hero = SITE_DATA.personal_information.hero;
     // const keywards = hero.main_keywards;
 
     // Construct the summary dynamically
@@ -2175,7 +2213,7 @@ function renderStandardCVAbout() {
     //     Experienced in applied research in: ${keywards.expertise_keywards.slice(0, 4).join(', ')}.
     //     Involved in the academic and industrial collaboration researches and projects.
     // `;
-    const summaryText = personal_info.profile_summary.intro_paragraph_html;
+    const summaryText = personal_information.profile_summary.intro_paragraph_html;
 
     const summaryParagraph = aboutSection.querySelector('p');
     if (summaryParagraph) {
@@ -2186,16 +2224,16 @@ function renderStandardCVAbout() {
 /**
  * Renders the Key Information section of the Standard CV page.
  * Dynamically calculates counts and years of experience from JSON data.
- * Target: #key-info-grid
+ * Target: #key_information-grid
  */
-async function renderStandardCVKeyInfo() {
+async function renderStandardCVKeyInformation() {
     // Recalculate the key_info from all data sources
     await refreshKeyMetricsData();
 
-    const keyInfoSection = document.getElementById('key-info');
-    if (!keyInfoSection || !SITE_DATA.key_metrics) return;
+    const keyInfoSection = document.getElementById('key_information');
+    if (!keyInfoSection || !SITE_DATA.key_information) return;
 
-    const data = SITE_DATA.key_metrics;
+    const data = SITE_DATA.key_information;
     const sectionInfo = data.section_info;
     const metrics = data.metrics;
 
@@ -2233,10 +2271,10 @@ async function renderStandardCVKeyInfo() {
 
 /**
  * Renders the Education section of the Standard CV page.
- * Target: #academicInformation
+ * Target: #academic_information
  */
 function renderStandardCVAcademicInformation() {
-    const educationSection = document.getElementById('academicInformation');
+    const educationSection = document.getElementById('academic_information');
     if (!educationSection || !SITE_DATA.academic_information) return;
 
     const data = SITE_DATA.academic_information;
@@ -2266,7 +2304,7 @@ function renderStandardCVAcademicInformation() {
             const colab = degree.collaboration[0];
             collaborationHtml = `
                 <div class="mt-1">
-                    <strong class="text-muted">Collaboration:</strong> 
+                    <strong class="text-muted">thesis_details:</strong> 
                     ${colab.collaboration_type} Program with ${colab.institution_name}, ${colab.institution_location}
                 </div>`;
         }
@@ -2338,13 +2376,13 @@ function renderCVRoleItem(role) {
 
 /**
  * Renders the Professional Experience section of the Standard CV page.
- * Target: #professionalExperiences
+ * Target: #professional_experiences
  */
-function renderStandardCVExperience() {
-    const section = document.getElementById('professionalExperiences');
-    if (!section || !SITE_DATA.professional_experience) return;
+function renderStandardCVProfessionalExperiences() {
+    const section = document.getElementById('professional_experiences');
+    if (!section || !SITE_DATA.professional_experiences) return;
 
-    const data = SITE_DATA.professional_experience;
+    const data = SITE_DATA.professional_experiences;
     const experiences = data.experiences;
 
     // 1. Update Section Header
@@ -2378,15 +2416,15 @@ function renderStandardCVExperience() {
 
 /**
  * Renders the Skills and Tools section of the Standard CV page.
- * Target: #skillsTools
+ * Target: #skills_tools
  */
-function renderStandardCVSkills() {
-    const skillsSection = document.getElementById('skillsTools');
-    if (!skillsSection || !SITE_DATA.skills) return;
+function renderStandardCVSkillsTools() {
+    const skillsSection = document.getElementById('skills_tools');
+    if (!skillsSection || !SITE_DATA.skills_tools) return;
 
-    const data = SITE_DATA.skills;
+    const data = SITE_DATA.skills_tools;
     const sectionInfo = data.section_info;
-    const skills = data.skills;
+    const skills_tools = data.skills;
 
     // 1. Update Section Header from JSON
     const headerElement = skillsSection.querySelector('.cv-section-title');
@@ -2397,10 +2435,10 @@ function renderStandardCVSkills() {
     const gridContainer = document.getElementById('skills-grid');
     if (!gridContainer) return;
 
-    // 2. Split skills into two columns
-    const midPoint = Math.ceil(skills.length / 2);
-    const leftColSkills = skills.slice(0, midPoint);
-    const rightColSkills = skills.slice(midPoint);
+    // 2. Split skills_tools into two columns
+    const midPoint = Math.ceil(skills_tools.length / 2);
+    const leftColSkills = skills_tools.slice(0, midPoint);
+    const rightColSkills = skills_tools.slice(midPoint);
 
     // Helper to generate the skill HTML block
     const renderSkillBlock = (skill) => `
@@ -2423,10 +2461,10 @@ function renderStandardCVSkills() {
 
 /**
  * Renders the Honors and Awards section of the Standard CV page.
- * Target: #honorsAwards
+ * Target: #honors_awards
  */
-function renderStandardCVAwards() {
-    const section = document.getElementById('honorsAwards');
+function renderStandardCVHonorsAwards() {
+    const section = document.getElementById('honors_awards');
     if (!section || !SITE_DATA.honors_awards) return;
 
     const data = SITE_DATA.honors_awards;
@@ -2454,8 +2492,8 @@ function renderStandardCVAwards() {
                         </span>
                         <span class="text-muted">${award.date}</span>
                     </div>
-                    <div class="italic text-muted">${award.issuer_organization.name}</div>
-                    <div class="mt-1">${award.short_description}</div>
+                    <div class="italic text-muted">${award.short_description}</div>
+                    <div class="mt-1">${award.issuer_organization.name}, ${award.issuer_organization.location}</div>
                 </div>
             `;
         }).join('');
@@ -2464,10 +2502,10 @@ function renderStandardCVAwards() {
 
 /**
  * Renders the Courses, Trainings and Certificates section of the Standard CV page.
- * Target: #coursesTrainingsCertificates
+ * Target: #courses_trainings_certificates
  */
-function renderStandardCVCourses() {
-    const section = document.getElementById('coursesTrainingsCertificates');
+function renderStandardCVCoursesTrainingsCertificates() {
+    const section = document.getElementById('courses_trainings_certificates');
     if (!section || !SITE_DATA.courses_trainings_certificates) return;
 
     const data = SITE_DATA.courses_trainings_certificates;
@@ -2544,6 +2582,22 @@ function renderStandardCVProjects() {
                 project.timeframe_details.end_date
             );
 
+            // Filter and process collaboration organisations
+            const collabOrgs = project.collaboration_organization || [];
+            const validCollabs = collabOrgs
+                .filter(org => org && org.name && org.name.trim() !== "")
+                .map(org => {
+                    const nameHtml = org.link
+                        ? `<a href="${org.link}" target="_blank" class="text-muted text-decoration-none">${org.name}</a>`
+                        : org.name;
+                    return org.location ? `${nameHtml} (${org.location})` : nameHtml;
+                })
+                .join('; ');
+
+            const collaborationHtml = validCollabs
+                ? `<div class="text-muted italic mt-1">Collaborations: ${validCollabs}</div>`
+                : '';
+
             return `
                 <div class="${spacingClass} small" id="${project.id_ref}">
                     <div class="d-flex justify-content-between align-items-baseline">
@@ -2555,6 +2609,12 @@ function renderStandardCVProjects() {
                             <span class="italic">${project.status}</span>
                         </span>
                     </div>
+                    
+                    <div class="fw-bold mt-1 text-dark">${project.title}</div>
+<!--                    <div class="text-muted italic">${project.organization}</div>-->
+
+                    ${collaborationHtml}
+
                     <div class="mt-1 text-justify">
                         ${project.short_description}
                     </div>
@@ -2564,17 +2624,18 @@ function renderStandardCVProjects() {
     }
 }
 
+
 /**
  * Renders the Memberships section of the Standard CV page.
- * Target: #memberships
+ * Target: #oranisational_memberships
  */
-function renderStandardCVMemberships() {
-    const section = document.getElementById('memberships');
-    if (!section || !SITE_DATA.memberships) return;
+function renderStandardCVOrganisationalMemberships() {
+    const section = document.getElementById('oranisational_memberships');
+    if (!section || !SITE_DATA.oranisational_memberships) return;
 
-    const data = SITE_DATA.memberships;
+    const data = SITE_DATA.oranisational_memberships;
     const sectionInfo = data.section_info;
-    const memberships = data.memberships;
+    const oranisational_memberships = data.memberships;
 
     // 1. Update Section Header
     const headerElement = section.querySelector('.cv-section-title');
@@ -2585,8 +2646,8 @@ function renderStandardCVMemberships() {
     // 2. Clear and Render Memberships List
     const listContainer = document.getElementById('memberships-list');
     if (listContainer) {
-        listContainer.innerHTML = memberships.map((item, index) => {
-            const isLast = index === memberships.length - 1;
+        listContainer.innerHTML = oranisational_memberships.map((item, index) => {
+            const isLast = index === oranisational_memberships.length - 1;
             const spacingClass = isLast ? 'mb-0' : 'mb-2';
 
             // Calculate duration (e.g., "1 yr 4 mos")
@@ -2618,10 +2679,10 @@ function renderStandardCVMemberships() {
 
 /**
  * Renders the Sessions and Events section of the Standard CV page.
- * Target: #sessionsEvents
+ * Target: #sessions_events
  */
 function renderStandardCVSessionsEvents() {
-    const section = document.getElementById('sessionsEvents');
+    const section = document.getElementById('sessions_events');
     if (!section || !SITE_DATA.sessions_events) return;
 
     const data = SITE_DATA.sessions_events;
@@ -2648,10 +2709,10 @@ function renderStandardCVSessionsEvents() {
                             <i class="${event.icon_class} me-2"></i>${event.title}
                         </span>
                         <span class="text-muted text-end">
-                            ${event.date} | <span class="italic">${event.type}</span>
+                            ${event.type} | <span class="italic">${event.date}</span>
                         </span>
                     </div>
-                    <div class="italic text-muted">${event.organization}</div>
+                    <div class="italic text-muted">${event.organization}, ${event.location}</div>
                     <div class="mt-1 text-justify">
                         ${event.description}
                     </div>
@@ -2766,10 +2827,10 @@ function renderStandardCVPortfolios() {
 
 /**
  * Renders the Volunteering section of the Standard CV page.
- * Target: #volunteeringServices
+ * Target: #volunteering_services
  */
-function renderStandardCVVolunteering() {
-    const section = document.getElementById('volunteeringServices');
+function renderStandardCVVolunteeringServices() {
+    const section = document.getElementById('volunteering_services');
     if (!section || !SITE_DATA.volunteering_services) return;
 
     const data = SITE_DATA.volunteering_services;
@@ -2849,7 +2910,7 @@ function renderStandardCVPublications() {
         // Update Group Header with Dynamic Count
         const groupHeader = container.querySelector('h6');
         if (groupHeader) {
-            groupHeader.innerHTML = `<i class="${groupData.icon_class} me-2"></i>${groupData.type} (${groupData.items.length})`;
+            groupHeader.innerHTML = `<i class="${groupData.icon_class} me-2"></i>${groupData.type}: ${groupData.sub_type} (${groupData.items.length})`;
         }
 
         // Render List Items
@@ -2864,7 +2925,8 @@ function renderStandardCVPublications() {
                     <div class="${isLast ? 'mb-0' : 'mb-3'}" id="${item.id_ref}">
                         <div class="d-flex justify-content-between align-items-baseline">
                             <span class="fw-bold text-muted"><i class="bi bi-file-earmark-text me-2"></i>${item.title}</span>
-                            <span class="text-muted text-end">${year} | <span class="italic">${groupData.sub_type}</span></span>
+                            <span class="text-muted text-end">${year}</span>
+<!--                            <span class="text-muted text-end">${year} | <span class="italic">${groupData.sub_type}</span></span>-->
                         </div>
                         <div class="mt-1 text-justify">
                             ${item.citation_text}
@@ -2886,8 +2948,8 @@ function renderStandardCVPublications() {
  * Renders the Contact Details section of the Standard CV page.
  * Target: #contacts
  */
-function renderStandardCVContacts() {
-    const section = document.getElementById('contactDetails');
+function renderStandardCVContactDetails() {
+    const section = document.getElementById('contact_details');
     if (!section || !SITE_DATA.contact_details) return;
 
     const data = SITE_DATA.contact_details;
@@ -2935,9 +2997,9 @@ function renderStandardCVContacts() {
 function renderStandardCVFooter() {
     const footerSection = document.getElementById('cv-footer');
     // Ensure data exists before proceeding
-    if (!footerSection || !SITE_DATA.personal_info) return;
+    if (!footerSection || !SITE_DATA.personal_information) return;
 
-    const personalInfo = SITE_DATA.personal_info;
+    const personalInfo = SITE_DATA.personal_information;
 
     // 1. Generate the date string
     const now = new Date();
@@ -2973,13 +3035,13 @@ function renderOnePageCV() {
     console.log("Rendering One-Page CV Section...");
     try {
         // Sidebar
-        renderOnePageCVSidebarContact()
+        renderOnePageCVSidebarContacts()
         renderOnePageCVSidebarExpertise()
-        renderOnePageCVSidebarResearchArea()
+        renderOnePageCVSidebarResearchAreas()
         renderOnePageCVSidebarPersonalSkills()
         renderOnePageCVSidebarProgramming()
         renderOnePageCVSidebarLanguages()
-        renderOnePageCVSidebarMemberships()
+        renderOnePageCVSidebarOrganisationalMemberships()
 
         // Main page body
         renderOnePageCVHeader()
@@ -3006,11 +3068,11 @@ function renderOnePageCV() {
 
 /**
  * Renders the Profile Image and Contact section for the One-Page CV Sidebar.
- * Loads data from personal_info.json, contact_details.json, and site.json.
+ * Loads data from personal_information.json, contact_details.json, and site.json.
  */
-function renderOnePageCVSidebarContact() {
+function renderOnePageCVSidebarContacts() {
     const sidebar = document.querySelector('#one-page-section .cv-sidebar');
-    if (!sidebar || !SITE_DATA.personal_info || !SITE_DATA.contact_details) return;
+    if (!sidebar || !SITE_DATA.personal_information || !SITE_DATA.contact_details) return;
 
     const contactsData = SITE_DATA.contact_details;
     const { section_info: info, contacts } = contactsData;
@@ -3030,34 +3092,44 @@ function renderOnePageCVSidebarContact() {
         .find(h => h.innerHTML.includes('bi-person-lines-fill') || h.textContent.includes('Contact'));
 
     if (contactHeader) {
+        // Dynamic Title from JSON (Expertise_XX) and hardcoded icon for sidebar consistency
         contactHeader.innerHTML = `<i class="${info.icon_class} me-2"></i>${info.title}`;
 
-        // 3. Update Contact Container (div with sidebar-info class)
-        const infoContainer = contactHeader.nextElementSibling;
-        if (infoContainer && infoContainer.classList.contains('sidebar-info')) {
-            infoContainer.innerHTML = `
-                <div><i class="${contacts.location.icon_class}"></i> <a href="${contacts.location.link}" target="_blank" rel="noreferrer"> ${contacts.location.text} </a> </div>
-                <div><i class="${contacts.teams.icon_class}"></i> <a href="${contacts.teams.link}" target="_blank" rel="noreferrer"> ${contacts.teams.text} </a> </div>
-                <div><i class="${contacts.email.icon_class}"></i> <a href="${contacts.email.link}" target="_blank"> ${contacts.email.text} </a> </div>
-                <div><i class="${contacts.linkedin.icon_class}"></i> <a href="${contacts.linkedin.link}" target="_blank"> ${contacts.linkedin.text} </a> </div>
-                <div><i class="g-scholar-icon"></i> <a href="${contacts.google_scholar.link}" target="_blank">${contacts.google_scholar.text}</a> </div>
-                <div><i class="researchgate-icon"></i> <a href="${contacts.researchgate.link}" target="_blank">${contacts.researchgate.text}</a> </div>
-                <div><i class="bi bi-globe"></i> <a href="http://emran.humachlab.com" target="_blank"> emran.humachlab.com </a> </div>
-            `;
+        // 2. Map limited items to bullet points
+        // Keys to exclude
+        const EXCLUDED_CONTACT_KEYS = [
+          'google_scholar',
+          'researchgate'
+        ];
+
+        // Convert object → entries, filter by key, then map to values
+        const contactsArr = Object.entries(contacts)
+          .filter(([key]) => !EXCLUDED_CONTACT_KEYS.includes(key))
+          .map(([, value]) => value);
+
+        const expHtml = contactsArr.map(item => `
+            <li><i class="${item.icon_class}"></i> <a href="${item.link}" target="_blank"> ${item.text} </a> </li>
+        `).join('');
+
+        // 3. Update DOM Container
+        const listContainer = contactHeader.nextElementSibling;
+
+        if (listContainer && listContainer.tagName === 'UL') {
+            listContainer.innerHTML = expHtml;
         }
     }
 }
 
 /**
  * Renders the Expertise section for the One-Page CV sidebar.
- * Loads Section Title, Icon, and Items from professional_experience.json.
+ * Loads Section Title, Icon, and Items from professional_experiences.json.
  */
 function renderOnePageCVSidebarExpertise(limit = 6) {
     const sidebar = document.querySelector('#one-page-section .cv-sidebar');
-    if (!sidebar || !SITE_DATA.professional_experience) return;
+    if (!sidebar || !SITE_DATA.professional_experiences) return;
 
     // 1. Locate the block that contains the 'cv_expertise' key
-    const expertiseData = SITE_DATA.professional_experience.summary.expertise_list.find(
+    const expertiseData = SITE_DATA.professional_experiences.summary.expertise_list.find(
         item => 'cv_expertise' in item)
 
     if (!expertiseData) return;
@@ -3088,12 +3160,12 @@ function renderOnePageCVSidebarExpertise(limit = 6) {
  * Renders the Research Area section for the One-Page CV sidebar.
  * Logic: Specifically searches for an object containing the 'cv_research_areas' key.
  */
-function renderOnePageCVSidebarResearchArea(limit = 6) {
+function renderOnePageCVSidebarResearchAreas(limit = 6) {
     const sidebar = document.querySelector('#one-page-section .cv-sidebar');
-    if (!sidebar || !SITE_DATA.professional_experience) return;
+    if (!sidebar || !SITE_DATA.professional_experiences) return;
 
     // 1. Locate the block that contains the 'cv_research_areas' key
-    const researchData = SITE_DATA.professional_experience.summary.expertise_list.find(
+    const researchData = SITE_DATA.professional_experiences.summary.expertise_list.find(
         item => 'cv_research_areas' in item
     );
 
@@ -3129,11 +3201,11 @@ function renderOnePageCVSidebarResearchArea(limit = 6) {
  * Renders the Personal Skills section for the One-Page CV sidebar.
  * Uses the Category Name (e.g., Soft Skills) as the title and section icon.
  */
-function renderOnePageCVSidebarPersonalSkills(limit = 4) {
+function renderOnePageCVSidebarPersonalSkills(limit = 7) {
     const sidebar = document.querySelector('#one-page-section .cv-sidebar');
-    if (!sidebar || !SITE_DATA.skills) return;
+    if (!sidebar || !SITE_DATA.skills_tools) return;
 
-    const { section_info: info, skills = [] } = SITE_DATA.skills;
+    const { section_info: info, skills = [] } = SITE_DATA.skills_tools;
 
     // 1. Data Filtering: Find all matching categories
     const keywords = ['soft', 'management', 'leadership', 'personal'];
@@ -3175,13 +3247,13 @@ function renderOnePageCVSidebarPersonalSkills(limit = 4) {
 
 /**
  * Renders the Programming section for the One-Page CV sidebar.
- * Dynamically loads title, icon, and items from skills.json.
+ * Dynamically loads title, icon, and items from skills_tools.json.
  */
-function renderOnePageCVSidebarProgramming(limit = 7) {
+function renderOnePageCVSidebarProgramming(limit = 10) {
     const sidebar = document.querySelector('#one-page-section .cv-sidebar');
-    if (!sidebar || !SITE_DATA.skills) return;
+    if (!sidebar || !SITE_DATA.skills_tools) return;
 
-    const { section_info: info, skills = [] } = SITE_DATA.skills;
+    const { section_info: info, skills = [] } = SITE_DATA.skills_tools;
 
     // 1. Locate the "Programming" skill object
     const progSkill = skills.find(s => s.category.toLowerCase().includes('programming'));
@@ -3245,13 +3317,13 @@ function renderOnePageCVSidebarLanguages(limit = 3) {
 
 /**
  * Renders the Memberships section for the One-Page CV sidebar.
- * Dynamically loads title, icon, and items from memberships.json.
+ * Dynamically loads title, icon, and items from oranisational_memberships.json.
  */
-function renderOnePageCVSidebarMemberships(limit = 4) {
+function renderOnePageCVSidebarOrganisationalMemberships(limit = 7) {
     const sidebar = document.querySelector('#one-page-section .cv-sidebar');
-    if (!sidebar || !SITE_DATA.memberships) return;
+    if (!sidebar || !SITE_DATA.oranisational_memberships) return;
 
-    const { section_info: info, memberships = [] } = SITE_DATA.memberships;
+    const { section_info: info, memberships = [] } = SITE_DATA.oranisational_memberships;
 
     // 1. Locate and Update Section Header
     const header = Array.from(sidebar.querySelectorAll('h5.sidebar-title'))
@@ -3284,14 +3356,14 @@ function renderOnePageCVSidebarMemberships(limit = 4) {
 
 /**
  * Renders the Header and Summary section of the One-Page CV.
- * Maps data directly from personal_info.json.
+ * Maps data directly from personal_information.json.
  * Target: .header-section
  */
 function renderOnePageCVHeader() {
     const headerSection = document.querySelector('#one-page-section .header-section');
-    if (!headerSection || !SITE_DATA.personal_info) return;
+    if (!headerSection || !SITE_DATA.personal_information) return;
 
-    const personalInfo = SITE_DATA.personal_info;
+    const personalInfo = SITE_DATA.personal_information;
     const hero = personalInfo.hero;
 
     // 1. Update Name Header
@@ -3319,7 +3391,7 @@ function renderOnePageCVHeader() {
 
 /**
  * Renders the small metrics grid for the One-Page CV.
- * Uses calculated data from SITE_DATA.key_metrics.
+ * Uses calculated data from SITE_DATA.key_information.
  * Target: .row.g-1.mb-2.text-center
  */
 async function renderOnePageCVMetrics() {
@@ -3328,9 +3400,9 @@ async function renderOnePageCVMetrics() {
 
     const metricsGrid = document.querySelector('#one-page-section .row.g-1.mb-2.text-center');
     // Ensure the grid exists and data is loaded
-    if (!metricsGrid || !SITE_DATA.key_metrics) return;
+    if (!metricsGrid || !SITE_DATA.key_information) return;
 
-    const metrics = SITE_DATA.key_metrics.metrics;
+    const metrics = SITE_DATA.key_information.metrics;
 
     // 2. Map metrics to the compact grid structure dynamically
     metricsGrid.innerHTML = metrics.map(metric => {
@@ -3594,9 +3666,9 @@ function renderOnePageCVAcademicInformation3() {
  */
 function renderOnePageCVExperience() {
     const mainBody = document.querySelector('#one-page-section .cv-main-body');
-    if (!mainBody || !SITE_DATA.professional_experience) return;
+    if (!mainBody || !SITE_DATA.professional_experiences) return;
 
-    const data = SITE_DATA.professional_experience;
+    const data = SITE_DATA.professional_experiences;
     const sectionInfo = data.section_info;
     const experiences = data.experiences || [];
 
@@ -3664,9 +3736,9 @@ function renderOnePageCVExperience() {
  */
 function renderOnePageCVExperience2() {
     const mainBody = document.querySelector('#one-page-section .cv-main-body');
-    if (!mainBody || !SITE_DATA.professional_experience) return;
+    if (!mainBody || !SITE_DATA.professional_experiences) return;
 
-    const data = SITE_DATA.professional_experience;
+    const data = SITE_DATA.professional_experiences;
     const sectionInfo = data.section_info;
     const experiences = data.experiences || [];
 
@@ -3749,9 +3821,9 @@ function renderOnePageCVExperience2() {
  */
 function renderOnePageCVExperience3() {
     const mainBody = document.querySelector('#one-page-section .cv-main-body');
-    if (!mainBody || !SITE_DATA.professional_experience) return;
+    if (!mainBody || !SITE_DATA.professional_experiences) return;
 
-    const { section_info: info, experiences = [] } = SITE_DATA.professional_experience;
+    const { section_info: info, experiences = [] } = SITE_DATA.professional_experiences;
 
     // 1. Update Main Section Header from JSON
     const header = Array.from(mainBody.querySelectorAll('h6'))
@@ -3828,9 +3900,9 @@ function renderOnePageCVExperience3() {
  */
 function renderOnePageCVExperience4() {
     const mainBody = document.querySelector('#one-page-section .cv-main-body');
-    if (!mainBody || !SITE_DATA.professional_experience) return;
+    if (!mainBody || !SITE_DATA.professional_experiences) return;
 
-    const { section_info: info, experiences = [] } = SITE_DATA.professional_experience;
+    const { section_info: info, experiences = [] } = SITE_DATA.professional_experiences;
 
     // 1. Update Main Section Header from JSON
     const header = Array.from(mainBody.querySelectorAll('h6'))
@@ -4126,6 +4198,152 @@ function renderOnePageCVVolunteering(limit=2) {
         }
     }
 }
+
+
+
+
+// *********************************************************************
+/**
+ * Generalised controller to render section details with a sticky title and row-based list.
+ * @param {string} sectionKey - The key in SITE_DATA (e.g., 'academic_information')
+ */
+function renderSectionDetailsPage(sectionKey) {
+    const data = SITE_DATA[sectionKey];
+    if (!data) return;
+    console.log(`Rendering ${sectionKey} details page...`);
+
+    // 1. Update the Sticky Title in the top bar
+    const stickyTitle = document.querySelector('.cv-nav-title');
+    if (stickyTitle) {
+        stickyTitle.innerHTML = `<i class="${data.section_info.icon_class} me-2"></i> ${data.section_info.title}`;
+    }
+
+    // 2. Update the Main Section Heading and tagline
+    const mainTitle = document.getElementById('section-main-title');
+    const mainDesc = document.getElementById('section-main-description');
+
+    if (mainTitle) {
+        mainTitle.innerHTML = `<i class="${data.section_info.icon_class} me-2"></i> ${data.section_info.title}`;
+    }
+    if (mainDesc) {
+        mainDesc.textContent = data.section_info.details;
+    }
+
+    // 3. Delegate list rendering based on section type
+    if (sectionKey === 'academic_information') {
+        console.log(`Showing ${sectionKey} details page:`, (sectionKey === 'academic_information'));
+        renderFullAcademicDetails(data.degrees);
+    }
+    else{
+        console.warn(`Unknown section type: ${sectionKey}`);
+    }
+}
+
+
+/**
+ * Renders exhaustive details for each academic degree into the details container.
+ * Organized by degree level categories with simple CV-style formatting.
+ * @param {Array} degrees - The array of degree objects from JSON.
+ */
+function renderFullAcademicDetails(degrees) {
+    const listContainer = document.getElementById('details-list-container');
+    if (!listContainer || !degrees) return;
+
+    listContainer.innerHTML = ''; // Clear existing content
+
+    // 1. Group degrees by degree_level to create subcategories
+    const groupedDegrees = degrees.reduce((acc, degree) => {
+        const level = degree.degree_level;
+        if (!acc[level]) acc[level] = [];
+        acc[level].push(degree);
+        return acc;
+    }, {});
+
+    // 2. Iterate through groups (Subcategories)
+    Object.keys(groupedDegrees).forEach((level) => {
+        // Render Group/Category Header
+        const categoryHeader = `
+            <div class="col-lg-12 mt-4" data-aos="fade-up">
+                <h3 class="resume-title border-bottom pb-2" style="font-size: 1.5rem;">
+                    <i class="bi bi-mortarboard-fill me-2"></i>${level}
+                </h3>
+            </div>`;
+        listContainer.insertAdjacentHTML('beforeend', categoryHeader);
+
+        // Render each degree in the category
+        groupedDegrees[level].forEach((item) => {
+            // Build Research Projects sub-list
+            let projectsHtml = '';
+            if (item.research_projects && item.research_projects.length > 0) {
+                projectsHtml = `
+                    <div class="mt-2">
+                        <span class="fw-bold">Research and Projects:</span>
+                        <ul class="mb-0 small">
+                            ${item.research_projects.map(rp => `
+                                <li>
+                                    <strong>${rp.type}:</strong> ${rp.title} 
+                                    ${rp.tools ? `<span class="text-muted">(Tools: ${rp.tools})</span>` : ''}
+                                    ${rp.link ? `<a href="${rp.link}" target="_blank" class="ms-1 text-primary"><i class="bx bx-link-external"></i></a>` : ''}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>`;
+            }
+
+            // Build Thesis details
+            let thesisHtml = '';
+            if (item.thesis_details && item.thesis_details.thesis_title) {
+                thesisHtml = `
+                    <div class="mt-2 small italic">
+                        <strong>Thesis:</strong> ${item.thesis_details.thesis_title} 
+                        ${item.thesis_details.thesis_length ? `<span class="text-muted">| ${item.thesis_details.thesis_length}</span>` : ''}
+                    </div>`;
+            }
+
+            const itemHtml = `
+                <div class="resume-item mb-4 ps-3 border-start border-2" data-aos="fade-up">
+                    <div class="d-flex justify-content-between align-items-baseline flex-wrap">
+                        <h4 class="fw-bold text-dark mb-0" style="font-size: 1.2rem;">${item.degree_major}</h4>
+                        <span class="text-muted small fw-bold">${item.start_date} – ${item.end_date} (${item.duration})</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-baseline flex-wrap mb-1">
+                        <p class="mb-0 fw-medium text-secondary">${item.department_name}</p>
+                        <span class="text-muted small italic">${item.status} | ${item.enrollment_type}</span>
+                    </div>
+
+                    <p class="mb-2">
+                        <i class="bi bi-building me-1"></i>
+                        <a href="${item.institution_url}" target="_blank" class="fw-bold text-decoration-none">${item.institution_name}</a>, 
+                        <span class="text-muted small">${item.institution_location}</span>
+                    </p>
+
+                    <div class="cv-item-details small">
+                        <div class="mb-1"><strong>Specialisation:</strong> ${item.specialization_details}</div>
+                        ${item.funding_details ? `<div class="mb-1"><strong>Funding:</strong> ${item.funding_details}</div>` : ''}
+                        ${item.collaboration_details ? `<div class="mb-1"><strong>Collaboration:</strong> ${item.collaboration_details}</div>` : ''}
+                        <div class="mb-1"><strong>Research Topic:</strong> ${item.research_topic}</div>
+                        
+                        <div class="mt-2 text-justify">${item.description}</div>
+                        
+                        ${thesisHtml}
+                        
+                        <div class="mt-2"><strong>Activity:</strong> ${item.activity_details}</div>
+                        
+                        ${projectsHtml}
+                        
+                        <div class="mt-2 text-muted italic">
+                            <strong>Skills:</strong> ${item.related_skills}
+                        </div>
+                    </div>
+                </div>
+            `;
+            listContainer.insertAdjacentHTML('beforeend', itemHtml);
+        });
+    });
+}
+
+
 
 
 

@@ -3,10 +3,7 @@
     "title": "Courses, Trainings and Certificates_XX",
     "details": "_XXA curated list of all completed courses, training programs, bootcamps, conferences, and earned certificates. It includes the professional development programmes and technical certifications focusing on advanced computational methodologies, software engineering best practices, and AI automation. These credentials signify a rigorous commitment to maintaining technical proficiency at the forefront of evolving research and industrial standards.",
     "icon_class": "bx bx-book-bookmark",
-    "table_headers": [
-      "Subject",
-      "Description"
-    ]
+    "hashtag": "courses_trainings_certificates"
   },
   "coursestrainingscertificates": [
     {

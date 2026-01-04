@@ -2,7 +2,8 @@
   "section_info": {
     "title": "Portfolios_XX",
     "details": "_XXPublicly available repositories demonstrating projects with my core contributions. An extensive technical portfolio featuring the architectural design and deployment of over fifty mobile applications and numerous industrial software solutions. This record highlights a proven capability for managing full-lifecycle digital projects, from initial conceptualisation to large-scale implementation within the global technology market.",
-    "icon_class": "bi-images"
+    "icon_class": "bi-images",
+    "hashtag": "portfolios"
   },
   "portfolios": [
     {
